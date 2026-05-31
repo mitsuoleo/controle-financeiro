@@ -1,6 +1,6 @@
 # Financeiro Pessoal
 
-Aplicação web para controle financeiro pessoal com cadastro/login, categorias, lançamentos e dashboard mensal.
+Aplicacao web para controle financeiro pessoal com cadastro/login, categorias, lancamentos e dashboard mensal.
 
 ## Stack
 
@@ -20,70 +20,64 @@ Backend:
 - PostgreSQL
 - Prisma ORM
 
+Infra local:
+
+- Docker Compose para PostgreSQL
+- Prisma Migrate para versionamento do banco
+
 Deploy sugerido:
 
 - Railway para API e banco PostgreSQL
 - Vercel para frontend
 - GitHub Actions para CI
 
-## Estrutura
-
-```txt
-financeiro-pessoal/
-├── backend/
-│   ├── prisma/
-│   │   └── schema.prisma
-│   └── src/
-│       ├── config/
-│       ├── middlewares/
-│       ├── modules/
-│       │   ├── auth/
-│       │   ├── categories/
-│       │   └── transactions/
-│       ├── utils/
-│       └── app.js
-└── frontend/
-    └── src/
-        ├── components/
-        ├── hooks/
-        ├── pages/
-        ├── services/
-        ├── store/
-        └── main.jsx
-```
-
 ## Setup local
 
-### Backend
+### 1. Banco de dados
+
+Na raiz do projeto:
+
+```bash
+docker compose up -d
+```
+
+Isso sobe um PostgreSQL local em `localhost:5432`.
+
+### 2. Backend
 
 ```bash
 cd backend
 npm install
 cp .env.example .env
 npm run db:generate
-npx prisma migrate dev
+npm run db:migrate:init
 npm run dev
 ```
 
 Variaveis principais:
 
 ```env
-DATABASE_URL="postgresql://user:password@localhost:5432/financeiro_pessoal"
-JWT_SECRET="troque-este-segredo"
-FRONTEND_URL="http://localhost:5173"
+DATABASE_URL="postgresql://financeiro:financeiro@localhost:5432/financeiro_db?schema=public"
+JWT_SECRET="troque_por_uma_string_longa_e_aleatoria"
+JWT_EXPIRES_IN="7d"
+FRONTEND_URL="http://localhost:5173,http://127.0.0.1:5173"
 PORT=3333
+NODE_ENV=development
 ```
 
-Para subir um PostgreSQL local com Docker:
+API local:
 
-```bash
-docker compose up -d
-cd backend
-npm run db:migrate:init
-npm run dev
+```txt
+http://localhost:3333
 ```
 
-### Frontend
+Health check:
+
+```txt
+http://localhost:3333/health
+```
+
+### 3. Frontend
 
 ```bash
 cd frontend
@@ -98,74 +92,105 @@ Variavel principal:
 VITE_API_URL=http://localhost:3333/api
 ```
 
-## Funcionalidades
+App local:
 
-MVP:
+```txt
+http://localhost:5173
+```
 
+## Scripts uteis
+
+Backend:
+
+```bash
+npm run dev
+npm run start
+npm run test
+npm run test:smoke
+npm run db:generate
+npm run db:migrate:init
+npm run db:migrate
+```
+
+Frontend:
+
+```bash
+npm run dev
+npm run build
+npm run preview
+```
+
+## Estrutura
+
+```txt
+financeiro-pessoal/
++-- backend/
+|   +-- prisma/
+|   |   +-- schema.prisma
+|   +-- src/
+|       +-- config/
+|       +-- middlewares/
+|       +-- modules/
+|       |   +-- auth/
+|       |   +-- categories/
+|       |   +-- transactions/
+|       +-- utils/
+|       +-- app.js
++-- frontend/
+|   +-- src/
+|       +-- components/
+|       +-- hooks/
+|       +-- pages/
+|       +-- services/
+|       +-- store/
+|       +-- main.jsx
++-- docker-compose.yml
+```
+
+## Sprint 1
+
+Status: em fechamento.
+
+Entregas:
+
+- Setup do projeto com Vite + Express
+- Banco PostgreSQL local com Docker Compose
+- Migrations com Prisma
 - Cadastro e login com JWT
 - Hash de senha com bcrypt
-- Rota protegida por token
-- Lancamentos de receita, despesa e transferencia
-- Categorias customizaveis via API
-- Filtro por tipo e categoria
-- Dashboard com saldo, receitas, despesas
-- Grafico mensal de receitas x despesas
-- Grafico de gastos por categoria
+- Rota protegida no frontend
+- Layout base responsivo
+- Smoke test de autenticacao
 
-Versao 2 (WIP):
+Checklist de verificacao:
 
-- Metas mensais por categoria
-- Alerta visual ao ultrapassar meta
-- Barra de progresso por meta
-- Lancamentos recorrentes mensais
-- Exportacao CSV por periodo
-- Relatorio mensal PDF
+```bash
+cd backend
+npm run test
+npm run test:smoke
 
-## Modelagem de dados
-
-### users
-
-| Campo | Tipo |
-| --- | --- |
-| id | uuid PK |
-| name | varchar(100) |
-| email | varchar unique |
-| password_hash | varchar |
-| created_at | timestamp |
-
-### categories
-
-| Campo | Tipo |
-| --- | --- |
-| id | uuid PK |
-| user_id | uuid FK users |
-| name | varchar(60) |
-| color | varchar(7) |
-| icon | varchar(40) |
-| type | enum(INCOME, EXPENSE, BOTH) |
-
-### transactions
-
-| Campo | Tipo |
-| --- | --- |
-| id | uuid PK |
-| user_id | uuid FK users |
-| category_id | uuid FK categories |
-| type | enum(INCOME, EXPENSE, TRANSFER) |
-| amount | decimal(10,2) |
-| description | varchar(200) |
-| date | date |
-| created_at | timestamp |
+cd ../frontend
+npm run build
+```
 
 ## Roadmap
 
-### Sprint 1 · 1-2 semanas
+### Sprint 2
 
-- Setup do projeto Vite + Express
-- Banco PostgreSQL + migrations
-- Cadastro e login com JWT
-- Rota protegida no frontend
-- Layout base responsivo
+- Tela de categorias
+- CRUD de categorias no frontend
+- Melhorias no formulario de lancamentos
+- Filtros por data, tipo e categoria
+- Paginacao da listagem
+
+### Sprint 3
+
+- Seletor de mes/ano no dashboard
+- Cards de resumo refinados
+- Grafico mensal com Recharts
+- Grafico de categorias em pizza
+- Ajustes finais de responsividade
+- Deploy Railway + Vercel
 
 ## Endpoints
 
