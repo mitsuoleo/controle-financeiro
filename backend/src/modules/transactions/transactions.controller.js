@@ -41,7 +41,7 @@ export async function listTransactions(req, res, next) {
     const [transactions, total] = await Promise.all([
       prisma.transaction.findMany({
         where,
-        include: { category: true, account: true, destinationAccount: true },
+        include: { category: true, account: true, destinationAccount: true, goal: true },
         orderBy: { date: 'desc' },
         skip: (safePage - 1) * safeLimit,
         take: safeLimit,
@@ -60,7 +60,7 @@ export async function listTransactions(req, res, next) {
 
 export async function createTransaction(req, res, next) {
   try {
-    const { type, amount, description, date, categoryId, accountId, destinationAccountId } = req.body
+    const { type, amount, description, date, categoryId, accountId, destinationAccountId, goalId } = req.body
 
     if (!type || !amount || !description || !date) {
       return res.status(400).json({ error: 'Campos obrigatórios: type, amount, description, date' })
@@ -102,6 +102,15 @@ export async function createTransaction(req, res, next) {
       return res.status(400).json({ error: 'Categoria inválida para este usuário' })
     }
 
+    if (type === 'EXPENSE' && goalId) {
+      const goalExists = await prisma.goal.findFirst({
+        where: { id: goalId, userId: req.userId }
+      })
+      if (!goalExists) {
+        return res.status(400).json({ error: 'Objetivo inválido para este usuário' })
+      }
+    }
+
     // Executar criação e atualização de saldos em transação
     const transaction = await prisma.$transaction(async (tx) => {
       const created = await tx.transaction.create({
@@ -113,9 +122,10 @@ export async function createTransaction(req, res, next) {
           categoryId: type === 'TRANSFER' ? null : (categoryId || null),
           accountId,
           destinationAccountId: type === 'TRANSFER' ? destinationAccountId : null,
+          goalId: type === 'EXPENSE' ? (goalId || null) : null,
           userId: req.userId,
         },
-        include: { category: true, account: true, destinationAccount: true },
+        include: { category: true, account: true, destinationAccount: true, goal: true },
       })
 
       // Atualizar saldos
@@ -133,6 +143,14 @@ export async function createTransaction(req, res, next) {
             invoicePaid: acc.type === 'CREDIT_CARD' ? false : undefined
           },
         })
+
+        // Atualizar saldo da meta se aplicável
+        if (goalId) {
+          await tx.goal.update({
+            where: { id: goalId },
+            data: { currentAmount: { increment: val } }
+          })
+        }
       } else if (type === 'TRANSFER') {
         const originAcc = await tx.account.findUnique({ where: { id: accountId } })
         await tx.account.update({
@@ -160,7 +178,7 @@ export async function createTransaction(req, res, next) {
 export async function updateTransaction(req, res, next) {
   try {
     const { id } = req.params
-    const { type, amount, description, date, categoryId, accountId, destinationAccountId } = req.body
+    const { type, amount, description, date, categoryId, accountId, destinationAccountId, goalId } = req.body
 
     const txExists = await prisma.transaction.findFirst({
       where: { id, userId: req.userId }
@@ -183,6 +201,14 @@ export async function updateTransaction(req, res, next) {
           where: { id: txExists.accountId },
           data: { balance: { increment: oldVal } },
         })
+
+        // Reverter saldo da meta anterior
+        if (txExists.goalId) {
+          await tx.goal.update({
+            where: { id: txExists.goalId },
+            data: { currentAmount: { decrement: oldVal } }
+          })
+        }
       } else if (txExists.type === 'TRANSFER') {
         await tx.account.update({
           where: { id: txExists.accountId },
@@ -205,6 +231,7 @@ export async function updateTransaction(req, res, next) {
         description: description !== undefined ? description.trim() : txExists.description,
         date: date !== undefined ? new Date(date) : txExists.date,
         categoryId: categoryId !== undefined ? (categoryId || null) : txExists.categoryId,
+        goalId: goalId !== undefined ? (goalId || null) : txExists.goalId
       }
 
       // Validar dados mesclados
@@ -228,6 +255,7 @@ export async function updateTransaction(req, res, next) {
           throw new Error('INVALID_ACCOUNTS')
         }
         merged.categoryId = null
+        merged.goalId = null
       } else {
         if (!merged.accountId) {
           throw new Error('ACCOUNT_REQUIRED')
@@ -237,10 +265,23 @@ export async function updateTransaction(req, res, next) {
           throw new Error('INVALID_ACCOUNT')
         }
         merged.destinationAccountId = null
+
+        if (merged.type !== 'EXPENSE') {
+          merged.goalId = null
+        }
       }
 
       if (merged.categoryId && !(await ensureCategoryBelongsToUser(merged.categoryId, req.userId, tx))) {
         throw new Error('INVALID_CATEGORY')
+      }
+
+      if (merged.goalId) {
+        const goalExists = await tx.goal.findFirst({
+          where: { id: merged.goalId, userId: req.userId }
+        })
+        if (!goalExists) {
+          throw new Error('INVALID_GOAL')
+        }
       }
 
       // 3. Aplicar saldos atualizados
@@ -259,6 +300,14 @@ export async function updateTransaction(req, res, next) {
             invoicePaid: acc.type === 'CREDIT_CARD' ? false : undefined
           },
         })
+
+        // Aplicar saldo na nova meta
+        if (merged.goalId) {
+          await tx.goal.update({
+            where: { id: merged.goalId },
+            data: { currentAmount: { increment: newVal } }
+          })
+        }
       } else if (merged.type === 'TRANSFER') {
         const originAcc = await tx.account.findUnique({ where: { id: merged.accountId } })
         await tx.account.update({
@@ -278,7 +327,7 @@ export async function updateTransaction(req, res, next) {
       return tx.transaction.update({
         where: { id },
         data: merged,
-        include: { category: true, account: true, destinationAccount: true },
+        include: { category: true, account: true, destinationAccount: true, goal: true },
       })
     })
 
@@ -302,6 +351,9 @@ export async function updateTransaction(req, res, next) {
     if (error.message === 'INVALID_CATEGORY') {
       return res.status(400).json({ error: 'Categoria inválida para este usuário' })
     }
+    if (error.message === 'INVALID_GOAL') {
+      return res.status(400).json({ error: 'Objetivo inválido para este usuário' })
+    }
     next(error)
   }
 }
@@ -321,7 +373,7 @@ export async function deleteTransaction(req, res, next) {
     await prisma.$transaction(async (tx) => {
       const val = Number(txExists.amount)
       
-      // Reverter saldos
+      // Reverter saldos de contas
       if (txExists.type === 'INCOME') {
         await tx.account.update({
           where: { id: txExists.accountId },
@@ -332,6 +384,14 @@ export async function deleteTransaction(req, res, next) {
           where: { id: txExists.accountId },
           data: { balance: { increment: val } },
         })
+
+        // Reverter saldo da meta
+        if (txExists.goalId) {
+          await tx.goal.update({
+            where: { id: txExists.goalId },
+            data: { currentAmount: { decrement: val } }
+          })
+        }
       } else if (txExists.type === 'TRANSFER') {
         await tx.account.update({
           where: { id: txExists.accountId },
