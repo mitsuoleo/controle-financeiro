@@ -8,6 +8,7 @@ import categoriesRoutes from './modules/categories/categories.routes.js'
 import transactionsRoutes from './modules/transactions/transactions.routes.js'
 import accountsRoutes from './modules/accounts/accounts.routes.js'
 import recurringTransactionsRoutes from './modules/recurring-transactions/recurring-transactions.routes.js'
+import goalsRoutes from './modules/goals/goals.routes.js'
 import { processRecurringTransactions } from './services/recurring.service.js'
 
 const app = express()
@@ -20,6 +21,7 @@ app.use('/api/categories', categoriesRoutes)
 app.use('/api/transactions', transactionsRoutes)
 app.use('/api/accounts', accountsRoutes)
 app.use('/api/recurring-transactions', recurringTransactionsRoutes)
+app.use('/api/goals', goalsRoutes)
 
 app.get('/health', (_, res) => res.json({ status: 'ok' }))
 
