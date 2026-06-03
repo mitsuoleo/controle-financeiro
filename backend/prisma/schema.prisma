@@ -22,6 +22,7 @@ model User {
   transactions         Transaction[]
   accounts             Account[]
   recurringTransactions RecurringTransaction[]
+  goals                 Goal[]
 
   @@map("users")
 }
@@ -49,6 +50,7 @@ model Transaction {
   categoryId           String?         @map("category_id")
   accountId            String?         @map("account_id")
   destinationAccountId String?         @map("destination_account_id")
+  goalId               String?         @map("goal_id")
   type                 TransactionType
   amount               Decimal         @db.Decimal(10, 2)
   description          String          @db.VarChar(200)
@@ -60,6 +62,7 @@ model Transaction {
   category           Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   account            Account?  @relation(fields: [accountId], references: [id], onDelete: Cascade)
   destinationAccount Account?  @relation("DestinationTransfers", fields: [destinationAccountId], references: [id], onDelete: SetNull)
+  goal               Goal?     @relation(fields: [goalId], references: [id], onDelete: SetNull)
 
   @@map("transactions")
 }
@@ -135,5 +138,21 @@ enum Frequency {
   WEEKLY
   MONTHLY
   YEARLY
+}
+
+model Goal {
+  id            String        @id @default(uuid())
+  userId        String        @map("user_id")
+  name          String        @db.VarChar(100)
+  targetAmount  Decimal       @db.Decimal(10, 2) @map("target_amount")
+  currentAmount Decimal       @default(0.00) @db.Decimal(10, 2) @map("current_amount")
+  deadline      DateTime      @db.Date
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions  Transaction[]
+
+  @@map("goals")
 }
 
