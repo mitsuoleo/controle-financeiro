@@ -4,6 +4,7 @@ import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recha
 import { MonthlyBarChart } from '../components/charts/BarChart'
 import { Button } from '../components/ui/Button'
 import { api } from '../services/api'
+import { formatRemainingTimeShort } from '../utils/labels'
 
 const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
 
@@ -421,14 +422,10 @@ export default function Dashboard() {
                         <span className="font-semibold text-slate-200 line-clamp-1" title={goal.name}>
                           {goal.name}
                         </span>
-                        <span className="text-[10px] font-bold text-slate-400 font-mono">
-                          {goal.daysLeft > 0 ? (
-                            <span className="text-emerald-400">{goal.daysLeft}d restantes</span>
-                          ) : goal.daysLeft === 0 ? (
-                            <span className="text-amber-400">Hoje!</span>
-                          ) : (
-                            <span className="text-rose-400">Encerrado</span>
-                          )}
+                        <span className="text-[10px] font-bold font-mono">
+                          <span className={goal.daysLeft > 0 ? 'text-emerald-400' : goal.daysLeft === 0 ? 'text-amber-400' : 'text-rose-400'}>
+                            {formatRemainingTimeShort(goal.daysLeft)}
+                          </span>
                         </span>
                       </div>
                       <div className="h-2.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800/50 p-0.5">

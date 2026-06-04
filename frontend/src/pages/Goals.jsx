@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { api, getApiError } from '../services/api'
-import { formatCurrency, formatCurrencyValue } from '../utils/labels'
+import { formatCurrency, formatCurrencyValue, formatRemainingTime } from '../utils/labels'
 
 const initialForm = {
   name: '',
@@ -231,13 +231,9 @@ export default function Goals() {
                 <div className="mt-6 pt-4 border-t border-slate-800/60 flex flex-col gap-3">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-slate-400 font-medium">Tempo restante:</span>
-                    {daysLeft > 0 ? (
-                      <span className="font-semibold text-emerald-400">{daysLeft} dia{daysLeft > 1 ? 's' : ''}</span>
-                    ) : daysLeft === 0 ? (
-                      <span className="font-bold text-amber-400">Hoje</span>
-                    ) : (
-                      <span className="font-semibold text-rose-400">Encerrada ({Math.abs(daysLeft)}d atrás)</span>
-                    )}
+                    <span className={`font-semibold ${daysLeft > 0 ? 'text-emerald-400' : daysLeft === 0 ? 'text-amber-400' : 'text-rose-400'}`}>
+                      {formatRemainingTime(daysLeft)}
+                    </span>
                   </div>
 
                   <div className="flex gap-2 items-center mt-1">
