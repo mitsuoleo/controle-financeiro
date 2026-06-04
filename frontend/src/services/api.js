@@ -2,9 +2,16 @@ import axios from 'axios'
 import { useAuthStore } from '../store/authStore'
 
 function getBaseURL() {
-  const url = import.meta.env.VITE_API_URL ?? 'http://localhost:3333/api'
-  if (url && !url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('/')) {
-    return `https://${url}`
+  let url = import.meta.env.VITE_API_URL ?? 'http://localhost:3333/api'
+  if (url) {
+    url = url.trim()
+    if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('/')) {
+      url = `https://${url}`
+    }
+    const urlWithoutTrailingSlash = url.replace(/\/+$/, '')
+    if (!urlWithoutTrailingSlash.endsWith('/api')) {
+      url = `${urlWithoutTrailingSlash}/api`
+    }
   }
   return url
 }
