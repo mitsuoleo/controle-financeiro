@@ -157,24 +157,24 @@ export default function Accounts() {
   return (
     <div className="grid gap-8">
       <div>
-        <h1 className="text-4xl font-extrabold text-white tracking-tight">Contas</h1>
+        <h1 className="text-4xl font-extrabold text-slate-800 tracking-tight">Contas</h1>
         <p className="mt-1.5 text-sm text-slate-400">Gerencie suas contas bancárias, cartões de crédito e carteiras físicas</p>
       </div>
 
       <section className="grid gap-6 lg:grid-cols-[360px_1fr]">
-        <form className="grid gap-5 rounded-xl border border-slate-800/80 bg-slate-900 p-5 shadow-xl self-start" onSubmit={handleSubmit}>
-          <h2 className="text-lg font-bold text-white tracking-tight">{editingId ? 'Editar conta' : 'Nova conta'}</h2>
+        <form className="card grid gap-5 p-5 self-start" onSubmit={handleSubmit}>
+          <h2 className="text-xl font-bold text-slate-800 tracking-tight">{editingId ? 'Editar conta' : 'Nova conta'}</h2>
 
           <Input label="Nome da Conta" name="name" value={form.name} onChange={updateForm} required />
 
-          <label className="grid gap-1.5 text-sm font-medium text-slate-300">
+          <label className="grid gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
             Tipo de Conta
             <select
               name="type"
-              className="h-10 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+              className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15 cursor-pointer"
               value={form.type}
               onChange={updateForm}
-              disabled={!!editingId} // Não permite mudar tipo de conta existente
+              disabled={!!editingId}
             >
               <option value="CHECKING">Conta Corrente</option>
               <option value="SAVINGS">Poupança</option>
@@ -207,11 +207,11 @@ export default function Accounts() {
             )
           )}
 
-          <label className="grid gap-1.5 text-sm font-medium text-slate-300">
+          <label className="grid gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
             Cor de Identificação
             <div className="flex gap-3">
               <input
-                className="h-10 w-14 rounded-md border border-slate-800 bg-slate-950 p-1 cursor-pointer"
+                className="h-11 w-14 rounded-xl border border-slate-200 bg-white p-1 cursor-pointer transition focus:border-pink-500"
                 type="color"
                 name="color"
                 value={form.color}
@@ -219,7 +219,7 @@ export default function Accounts() {
               />
               <input
                 aria-label="Código da cor"
-                className="h-10 flex-1 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                className="h-11 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15"
                 name="color"
                 value={form.color}
                 onChange={updateForm}
@@ -228,7 +228,7 @@ export default function Accounts() {
             </div>
           </label>
 
-          {error && <p className="rounded-md bg-red-950/50 border border-red-900/50 px-3 py-2 text-sm text-red-400">{error}</p>}
+          {error && <p className="rounded-xl bg-rose-50 border border-rose-200 px-3.5 py-2.5 text-sm font-semibold text-rose-600">{error}</p>}
 
           <div className="flex gap-2 mt-2">
             <Button type="submit" disabled={saving}>
@@ -248,14 +248,14 @@ export default function Accounts() {
           </div>
         </form>
 
-        <article className="rounded-xl border border-slate-800/80 bg-slate-900 shadow-xl overflow-hidden">
-          <div className="border-b border-slate-800 bg-slate-900/50 p-4">
-            <h2 className="text-lg font-bold text-white tracking-tight">Contas Cadastradas</h2>
+        <article className="card overflow-hidden">
+          <div className="border-b border-pink-100 bg-pink-50/10 p-4">
+            <h2 className="text-xl font-bold text-slate-800 tracking-tight">Contas Cadastradas</h2>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] text-left text-sm">
-              <thead className="bg-slate-950/40 text-xs uppercase tracking-wider text-slate-400 border-b border-slate-800">
+              <thead className="bg-pink-50/40 text-xs uppercase tracking-wider text-slate-500 border-b border-pink-100">
                 <tr>
                   <th className="px-5 py-4">Nome</th>
                   <th className="px-5 py-4">Tipo</th>
@@ -264,48 +264,48 @@ export default function Accounts() {
                   <th className="px-5 py-4 text-right">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-pink-100/50">
                 {loading ? (
                   <tr>
-                    <td className="px-5 py-8 text-slate-400 text-center" colSpan="5">
+                    <td className="px-5 py-8 text-slate-500 text-center" colSpan="5">
                       <div className="flex items-center justify-center gap-3">
-                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-pink-500 border-t-transparent" />
                         Carregando contas...
                       </div>
                     </td>
                   </tr>
                 ) : accounts.length === 0 ? (
                   <tr>
-                    <td className="px-5 py-8 text-slate-500 text-center" colSpan="5">
+                    <td className="px-5 py-8 text-slate-400 text-center" colSpan="5">
                       Nenhuma conta cadastrada
                     </td>
                   </tr>
                 ) : (
                   accounts.map((account) => (
-                    <tr key={account.id} className="hover:bg-slate-950/20 transition-colors duration-150">
-                      <td className="px-5 py-4 font-semibold text-slate-100">{account.name}</td>
-                      <td className="px-5 py-4 text-slate-400">{accountTypeLabels[account.type]}</td>
+                    <tr key={account.id} className="hover:bg-pink-50/20 transition-colors duration-150">
+                      <td className="px-5 py-4 font-semibold text-slate-800">{account.name}</td>
+                      <td className="px-5 py-4 text-slate-500">{accountTypeLabels[account.type]}</td>
                       <td className="px-5 py-4">
-                        <span className="inline-flex items-center gap-2 text-slate-300">
-                          <span className="h-4 w-4 rounded-full border border-slate-800 shadow" style={{ background: account.color }} />
+                        <span className="inline-flex items-center gap-2 text-slate-600">
+                          <span className="h-4 w-4 rounded-full border border-slate-200 shadow-sm" style={{ background: account.color }} />
                           <code className="text-xs text-slate-400 font-mono">{account.color}</code>
                         </span>
                       </td>
-                      <td className="px-5 py-4 text-right font-mono">
+                      <td className="px-5 py-4 text-right font-sans">
                         {account.type === 'CREDIT_CARD' ? (
                           <div className="grid gap-0.5 text-right">
-                            <span className="text-rose-400 font-semibold">
+                            <span className="text-rose-600 font-bold">
                               Fatura: {Number(Math.abs(Number(account.balance))).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                             </span>
-                            <span className="text-xs text-slate-400">
+                            <span className="text-xs text-slate-500 font-semibold">
                               Disp: {Number(Number(account.creditLimit) + Number(account.balance)).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                             </span>
-                            <span className="text-xs text-slate-500">
+                            <span className="text-xs text-slate-400">
                               Limite total: {Number(account.creditLimit).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                             </span>
                           </div>
                         ) : (
-                          <span className={`font-bold ${Number(account.balance) >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                          <span className={`font-bold ${Number(account.balance) >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
                             {Number(account.balance).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                           </span>
                         )}
@@ -315,7 +315,7 @@ export default function Accounts() {
                           {account.type === 'CREDIT_CARD' && Number(account.balance) < 0 && (
                             <Button 
                               variant="secondary" 
-                              className="h-8 px-2.5 text-xs !bg-emerald-500/10 !border-emerald-500/20 !text-emerald-400 hover:!bg-emerald-500/20" 
+                              className="h-8 px-2.5 text-xs !bg-emerald-50 !border-emerald-200 !text-emerald-600 hover:!bg-emerald-100/50" 
                               onClick={() => setPayingAccountId(account.id)}
                             >
                               Pagar Fatura
@@ -338,31 +338,30 @@ export default function Accounts() {
         </article>
       </section>
 
-      {/* Modal de Pagamento de Fatura */}
       {payingAccountId && selectedPayingAccount && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+        <div className="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4">
           <form 
             onSubmit={handlePayInvoice}
-            className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl animate-in fade-in zoom-in duration-200 grid gap-5"
+            className="modal w-full max-w-md p-6 shadow-2xl animate-in zoom-in-95 duration-200 grid gap-5"
           >
             <div>
-              <h3 className="text-xl font-bold text-white tracking-tight">Pagar Fatura</h3>
+              <h3 className="text-xl font-bold text-slate-800 tracking-tight">Pagar Fatura</h3>
               <p className="mt-1 text-sm text-slate-400">
                 Pagar fatura do cartão <strong>{selectedPayingAccount.name}</strong>
               </p>
             </div>
 
-            <div className="rounded-lg bg-rose-500/10 border border-rose-500/20 p-4 text-center">
-              <span className="text-xs text-rose-400 font-semibold uppercase tracking-wider block">Valor total a pagar</span>
-              <strong className="text-2xl font-black text-rose-400 mt-1 block">
+            <div className="rounded-xl bg-rose-50 border border-rose-100 p-4 text-center shadow-sm">
+              <span className="text-xs text-rose-600 font-bold uppercase tracking-wider block">Valor total a pagar</span>
+              <strong className="text-2xl font-black text-rose-600 mt-1 block font-sans">
                 {Number(Math.abs(Number(selectedPayingAccount.balance))).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
               </strong>
             </div>
 
-            <label className="grid gap-1.5 text-sm font-medium text-slate-300">
+            <label className="grid gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
               Debitar valor da conta:
               <select
-                className="h-10 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15 cursor-pointer"
                 value={paymentOriginId}
                 onChange={(e) => setPaymentOriginId(e.target.value)}
               >
@@ -377,7 +376,7 @@ export default function Accounts() {
               </select>
             </label>
 
-            {error && <p className="rounded-md bg-red-950/50 border border-red-900/50 px-3 py-2 text-sm text-red-400">{error}</p>}
+            {error && <p className="rounded-xl bg-rose-50 border border-rose-200 px-3.5 py-2.5 text-sm font-semibold text-rose-600">{error}</p>}
 
             <div className="flex justify-end gap-3 mt-2">
               <Button 

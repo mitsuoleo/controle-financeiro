@@ -1,9 +1,9 @@
 export function Input({ label, className = '', ...props }) {
   return (
-    <label className="grid gap-1.5 text-sm font-medium text-slate-300">
+    <label className="grid gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
       {label}
       <input
-        className={`h-10 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 ${className}`}
+        className={`h-11 rounded-xl border border-slate-200 bg-white px-3.5 text-sm text-slate-800 outline-none transition-all placeholder:text-slate-400 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15 ${className}`}
         {...props}
       />
     </label>

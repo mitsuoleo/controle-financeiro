@@ -3,7 +3,7 @@ export function parseAllowedOrigins(value) {
 
   return value
     .split(',')
-    .map((origin) => origin.trim())
+    .map((origin) => origin.trim().replace(/\/+$/, ''))
     .filter(Boolean)
 }
 
