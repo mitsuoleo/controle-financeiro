@@ -4,6 +4,7 @@ import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { api, getApiError } from '../services/api'
 import { formatCurrency, transactionTypeLabels, formatCurrencyValue } from '../utils/labels'
+import { useQuickAddStore } from '../store/quickAddStore'
 
 const initialForm = {
   type: 'EXPENSE',
@@ -37,6 +38,7 @@ const frequencyLabels = {
 }
 
 export default function Transactions() {
+  const { open: openQuickAdd } = useQuickAddStore()
   const location = useLocation()
   const [transactions, setTransactions] = useState([])
   const [categories, setCategories] = useState([])
@@ -88,6 +90,14 @@ export default function Transactions() {
 
   useEffect(() => {
     loadData()
+  }, [filteredParams])
+
+  useEffect(() => {
+    const handleSave = () => {
+      loadData()
+    }
+    window.addEventListener('transaction-saved', handleSave)
+    return () => window.removeEventListener('transaction-saved', handleSave)
   }, [filteredParams])
 
   useEffect(() => {
@@ -443,13 +453,22 @@ export default function Transactions() {
 
   return (
     <div className="grid gap-8">
-      <div>
-        <h1 className="text-4xl font-extrabold text-white tracking-tight">Lançamentos</h1>
-        <p className="mt-1.5 text-sm text-slate-400">Gerencie e cadastre suas receitas, despesas e transferências</p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-4xl font-extrabold text-white tracking-tight">Lançamentos</h1>
+          <p className="mt-1.5 text-sm text-slate-400">Gerencie e cadastre suas receitas, despesas e transferências</p>
+        </div>
+        <Button 
+          variant="primary" 
+          onClick={() => openQuickAdd('EXPENSE')} 
+          className="lg:hidden h-11 bg-emerald-600 hover:bg-emerald-500 font-bold px-5 rounded-xl shadow-lg shadow-emerald-500/10 cursor-pointer self-start"
+        >
+          + Novo Lançamento
+        </Button>
       </div>
 
       <section className="grid gap-6 lg:grid-cols-[320px_1fr]">
-        <form className="grid gap-5 rounded-xl border border-slate-800/80 bg-slate-900 p-5 shadow-xl self-start" onSubmit={handleSubmit}>
+        <form className={`${editingId ? 'grid' : 'hidden lg:grid'} gap-5 rounded-xl border border-slate-800/80 bg-slate-900 p-5 shadow-xl self-start`} onSubmit={handleSubmit}>
           <h2 className="text-lg font-bold text-white tracking-tight">
             {editingId ? 'Editar lançamento' : form.type === 'PAY_INVOICE' ? 'Confirmar Pagamento' : form.isRecurring ? 'Novo agendamento' : 'Novo lançamento'}
           </h2>

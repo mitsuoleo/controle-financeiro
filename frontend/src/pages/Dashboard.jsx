@@ -4,6 +4,8 @@ import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recha
 import { MonthlyBarChart } from '../components/charts/BarChart'
 import { Button } from '../components/ui/Button'
 import { api } from '../services/api'
+import { formatRemainingTimeShort } from '../utils/labels'
+import { useQuickAddStore } from '../store/quickAddStore'
 
 const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
 
@@ -29,6 +31,7 @@ function StatCard({ label, value, tone }) {
 }
 
 export default function Dashboard() {
+  const { open: openQuickAdd } = useQuickAddStore()
   const now = new Date()
   const [month, setMonth] = useState(now.getMonth() + 1)
   const [year, setYear] = useState(now.getFullYear())
@@ -39,36 +42,44 @@ export default function Dashboard() {
   const [goals, setGoals] = useState([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    async function loadDashboard() {
-      setLoading(true)
-      try {
-        const [
-          { data: summaryData },
-          { data: transactionsData },
-          { data: categoriesData },
-          { data: accountsData },
-          { data: goalsData }
-        ] = await Promise.all([
-          api.get('/transactions/summary', { params: { month, year } }),
-          api.get('/transactions', { params: { limit: 100 } }),
-          api.get('/categories'),
-          api.get('/accounts'),
-          api.get('/goals'),
-        ])
-        setSummary(summaryData)
-        setTransactions(transactionsData.data)
-        setCategories(categoriesData)
-        setAccounts(accountsData)
-        setGoals(goalsData)
-      } catch (err) {
-        console.error('Não foi possível carregar o dashboard', err)
-      } finally {
-        setLoading(false)
-      }
+  async function loadDashboard(silent = false) {
+    if (!silent) setLoading(true)
+    try {
+      const [
+        { data: summaryData },
+        { data: transactionsData },
+        { data: categoriesData },
+        { data: accountsData },
+        { data: goalsData }
+      ] = await Promise.all([
+        api.get('/transactions/summary', { params: { month, year } }),
+        api.get('/transactions', { params: { limit: 100 } }),
+        api.get('/categories'),
+        api.get('/accounts'),
+        api.get('/goals'),
+      ])
+      setSummary(summaryData)
+      setTransactions(transactionsData.data)
+      setCategories(categoriesData)
+      setAccounts(accountsData)
+      setGoals(goalsData)
+    } catch (err) {
+      console.error('Não foi possível carregar o dashboard', err)
+    } finally {
+      if (!silent) setLoading(false)
     }
+  }
 
-    loadDashboard()
+  useEffect(() => {
+    loadDashboard(false)
+  }, [month, year])
+
+  useEffect(() => {
+    const handleSave = () => {
+      loadDashboard(true) // silent refresh in background
+    }
+    window.addEventListener('transaction-saved', handleSave)
+    return () => window.removeEventListener('transaction-saved', handleSave)
   }, [month, year])
 
   function handlePrevMonth() {
@@ -215,6 +226,34 @@ export default function Dashboard() {
           </Button>
         </div>
       </div>
+
+      {/* Ações Rápidas Section */}
+      <section className="grid grid-cols-3 gap-3 sm:flex sm:items-center sm:gap-4 bg-slate-900/40 border border-slate-800/50 p-4 rounded-xl shadow-inner">
+        <button 
+          type="button" 
+          onClick={() => openQuickAdd('INCOME')}
+          className="flex items-center justify-center gap-2 h-11 px-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 hover:bg-emerald-500/20 active:scale-[0.98] transition-all text-emerald-400 font-semibold text-xs sm:text-sm shadow-sm cursor-pointer flex-1 sm:flex-none"
+        >
+          <span className="text-base sm:text-lg">💰</span>
+          <span>Nova Receita</span>
+        </button>
+        <button 
+          type="button" 
+          onClick={() => openQuickAdd('EXPENSE')}
+          className="flex items-center justify-center gap-2 h-11 px-4 rounded-xl border border-rose-500/20 bg-rose-500/10 hover:bg-rose-500/20 active:scale-[0.98] transition-all text-rose-400 font-semibold text-xs sm:text-sm shadow-sm cursor-pointer flex-1 sm:flex-none"
+        >
+          <span className="text-base sm:text-lg">💸</span>
+          <span>Nova Despesa</span>
+        </button>
+        <button 
+          type="button" 
+          onClick={() => openQuickAdd('TRANSFER')}
+          className="flex items-center justify-center gap-2 h-11 px-4 rounded-xl border border-blue-500/20 bg-blue-500/10 hover:bg-blue-500/20 active:scale-[0.98] transition-all text-blue-400 font-semibold text-xs sm:text-sm shadow-sm cursor-pointer flex-1 sm:flex-none"
+        >
+          <span className="text-base sm:text-lg">⇄</span>
+          <span>Transferência</span>
+        </button>
+      </section>
 
       {exceededBudgets.length > 0 && (
         <div className="rounded-xl border border-rose-500/20 bg-rose-500/5 p-5 shadow-lg backdrop-blur-md animate-in fade-in slide-in-from-top duration-300">
@@ -421,14 +460,10 @@ export default function Dashboard() {
                         <span className="font-semibold text-slate-200 line-clamp-1" title={goal.name}>
                           {goal.name}
                         </span>
-                        <span className="text-[10px] font-bold text-slate-400 font-mono">
-                          {goal.daysLeft > 0 ? (
-                            <span className="text-emerald-400">{goal.daysLeft}d restantes</span>
-                          ) : goal.daysLeft === 0 ? (
-                            <span className="text-amber-400">Hoje!</span>
-                          ) : (
-                            <span className="text-rose-400">Encerrado</span>
-                          )}
+                        <span className="text-[10px] font-bold font-mono">
+                          <span className={goal.daysLeft > 0 ? 'text-emerald-400' : goal.daysLeft === 0 ? 'text-amber-400' : 'text-rose-400'}>
+                            {formatRemainingTimeShort(goal.daysLeft)}
+                          </span>
                         </span>
                       </div>
                       <div className="h-2.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800/50 p-0.5">
