@@ -4,6 +4,7 @@ import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { api, getApiError } from '../services/api'
 import { formatCurrency, transactionTypeLabels, formatCurrencyValue } from '../utils/labels'
+import { useQuickAddStore } from '../store/quickAddStore'
 
 const initialForm = {
   type: 'EXPENSE',
@@ -37,9 +38,18 @@ const frequencyLabels = {
 }
 
 export default function Transactions() {
+  const { open: openQuickAdd } = useQuickAddStore()
   const location = useLocation()
   const [transactions, setTransactions] = useState([])
   const [categories, setCategories] = useState([])
+
+  useEffect(() => {
+    const handleSave = () => {
+      loadData()
+    }
+    window.addEventListener('transaction-saved', handleSave)
+    return () => window.removeEventListener('transaction-saved', handleSave)
+  }, [filteredParams])
   const [accounts, setAccounts] = useState([])
   const [goals, setGoals] = useState([])
   const [recurringRules, setRecurringRules] = useState([])
@@ -88,6 +98,14 @@ export default function Transactions() {
 
   useEffect(() => {
     loadData()
+  }, [filteredParams])
+
+  useEffect(() => {
+    const handleSave = () => {
+      loadData()
+    }
+    window.addEventListener('transaction-saved', handleSave)
+    return () => window.removeEventListener('transaction-saved', handleSave)
   }, [filteredParams])
 
   useEffect(() => {

@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { api, getApiError } from '../services/api'
-import { formatCurrency, formatCurrencyValue } from '../utils/labels'
+import { formatCurrency, formatCurrencyValue, formatRemainingTime } from '../utils/labels'
+import { useQuickAddStore } from '../store/quickAddStore'
 
 const initialForm = {
   name: '',
@@ -13,6 +14,7 @@ const initialForm = {
 
 export default function Goals() {
   const navigate = useNavigate()
+  const { open: openQuickAdd } = useQuickAddStore()
   const [goals, setGoals] = useState([])
   const [form, setForm] = useState(initialForm)
   const [editingId, setEditingId] = useState(null)
@@ -36,6 +38,14 @@ export default function Goals() {
 
   useEffect(() => {
     loadGoals()
+  }, [])
+
+  useEffect(() => {
+    const handleSave = () => {
+      loadGoals()
+    }
+    window.addEventListener('transaction-saved', handleSave)
+    return () => window.removeEventListener('transaction-saved', handleSave)
   }, [])
 
   function updateForm(event) {
@@ -129,7 +139,7 @@ export default function Goals() {
   }
 
   function handleMakeDeposit(goalId) {
-    navigate('/transactions', { state: { goalId, type: 'EXPENSE' } })
+    openQuickAdd('EXPENSE', goalId)
   }
 
   function getDaysRemaining(deadlineStr) {
