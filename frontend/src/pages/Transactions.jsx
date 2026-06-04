@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { api, getApiError } from '../services/api'
-import { formatCurrency, transactionTypeLabels, formatCurrencyValue } from '../utils/labels'
+import { formatCurrency, transactionTypeLabels, formatCurrencyValue, formatDate } from '../utils/labels'
 import { useQuickAddStore } from '../store/quickAddStore'
 
 const initialForm = {
@@ -319,7 +319,7 @@ export default function Transactions() {
         : (tx.category?.name ?? '')
       const accountName = tx.account?.name ?? ''
       const amount = Number(tx.amount).toFixed(2).replace('.', ',')
-      const formattedDate = new Date(tx.date).toLocaleDateString('pt-BR')
+      const formattedDate = formatDate(tx.date)
       const typeLabel = transactionTypeLabels[tx.type] ?? tx.type
 
       return [
@@ -383,8 +383,8 @@ export default function Transactions() {
       const cat = categories.find((c) => c.id === filters.categoryId)
       if (cat) filterDesc.push(`Categoria: ${cat.name}`)
     }
-    if (filters.startDate) filterDesc.push(`Início: ${new Date(filters.startDate).toLocaleDateString('pt-BR')}`)
-    if (filters.endDate) filterDesc.push(`Fim: ${new Date(filters.endDate).toLocaleDateString('pt-BR')}`)
+    if (filters.startDate) filterDesc.push(`Início: ${formatDate(filters.startDate)}`)
+    if (filters.endDate) filterDesc.push(`Fim: ${formatDate(filters.endDate)}`)
     
     const filterText = filterDesc.length > 0 ? filterDesc.join(' | ') : 'Nenhum (Todos os lançamentos)'
     doc.text(filterText, 15, 58)
@@ -425,7 +425,7 @@ export default function Transactions() {
         ? (tx.destinationAccount?.name ?? '-') 
         : (tx.category?.name ?? '-')
       const accountName = tx.account?.name ?? '-'
-      const formattedDate = new Date(tx.date).toLocaleDateString('pt-BR')
+      const formattedDate = formatDate(tx.date)
       const typeLabel = transactionTypeLabels[tx.type] ?? tx.type
       const valueStr = `${tx.type === 'EXPENSE' ? '- ' : tx.type === 'INCOME' ? '+ ' : ''}${formatCurrency(tx.amount)}`
       
@@ -879,7 +879,7 @@ export default function Transactions() {
                                 </div>
                               )}
                             </td>
-                            <td className="px-5 py-4 text-slate-500">{new Date(transaction.date).toLocaleDateString('pt-BR')}</td>
+                            <td className="px-5 py-4 text-slate-500">{formatDate(transaction.date)}</td>
                             <td className="px-5 py-4 text-slate-500">{transactionTypeLabels[transaction.type]}</td>
                             <td className={`px-5 py-4 text-right font-bold ${valColor}`}>
                               {isIncome ? '+ ' : isExpense ? '- ' : ''}
@@ -1012,7 +1012,7 @@ export default function Transactions() {
                           </td>
                           <td className="px-5 py-4 text-slate-600 font-semibold">{frequencyLabels[rule.frequency]}</td>
                           <td className="px-5 py-4 text-slate-500">
-                            {new Date(rule.nextDueDate).toLocaleDateString('pt-BR')}
+                            {formatDate(rule.nextDueDate)}
                           </td>
                           <td className={`px-5 py-4 text-right font-bold ${valColor}`}>
                             {isIncome ? '+ ' : isExpense ? '- ' : ''}

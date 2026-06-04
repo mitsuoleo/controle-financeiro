@@ -93,3 +93,15 @@ export function formatRemainingTimeShort(days) {
   return `${days}d`
 }
 
+export function formatDate(date) {
+  if (!date) return '-'
+  const d = new Date(date)
+  return isNaN(d.getTime()) ? '-' : d.toLocaleDateString('pt-BR')
+}
+
+export function formatDateShort(date) {
+  if (!date) return '-'
+  const d = new Date(date)
+  return isNaN(d.getTime()) ? '-' : d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+}
+

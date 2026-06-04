@@ -4,7 +4,7 @@ import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recha
 import { MonthlyBarChart } from '../components/charts/BarChart'
 import { Button } from '../components/ui/Button'
 import { api } from '../services/api'
-import { formatRemainingTimeShort } from '../utils/labels'
+import { formatRemainingTimeShort, formatDateShort } from '../utils/labels'
 import { useQuickAddStore } from '../store/quickAddStore'
 
 const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
@@ -558,7 +558,7 @@ export default function Dashboard() {
                     <div className="grid gap-0.5 col-span-2">
                       <span className="font-bold text-sm text-slate-700 line-clamp-1">{tx.description}</span>
                       <div className="flex items-center gap-2 text-[10px] text-slate-400 font-bold">
-                        <span>{new Date(tx.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</span>
+                        <span>{formatDateShort(tx.date)}</span>
                         <span>•</span>
                         <span className="flex items-center gap-1">
                           <span className="h-2 w-2 rounded-full" style={{ backgroundColor: tx.category?.color ?? '#cbd5e1' }} />
