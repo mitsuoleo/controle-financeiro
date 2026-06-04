@@ -167,64 +167,64 @@ export function QuickAddModal() {
 
   return (
     <div 
-      className="fixed inset-0 z-[100] flex items-end sm:items-center sm:justify-center bg-slate-950/80 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200 overflow-y-auto"
+      className="fixed inset-0 z-[100] flex items-end sm:items-center sm:justify-center bg-slate-900/40 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200 overflow-y-auto"
       onKeyDown={handleKeyDown}
       onClick={(e) => {
         if (e.target === e.currentTarget) close()
       }}
     >
       <div 
-        className="w-full bg-slate-900 border border-slate-800/80 rounded-t-2xl sm:rounded-xl shadow-2xl p-6 flex flex-col gap-5 sm:max-w-md animate-in slide-in-from-bottom duration-300 max-h-[92vh] sm:max-h-none overflow-y-auto"
+        className="w-full bg-white border border-pink-100 rounded-t-2xl sm:rounded-2xl shadow-2xl p-6 flex flex-col gap-5 sm:max-w-md animate-in slide-in-from-bottom duration-300 max-h-[92vh] sm:max-h-none overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <header className="flex items-center justify-between border-b border-slate-800/60 pb-3">
+        <header className="flex items-center justify-between border-b border-pink-50 pb-3">
           <div>
-            <h3 className="text-lg font-bold text-white tracking-tight">Lançamento Rápido</h3>
+            <h3 className="text-xl font-bold text-rose-600 tracking-tight">Lançamento Rápido</h3>
             <p className="text-xs text-slate-400 mt-0.5">Cadastre uma movimentação rapidamente</p>
           </div>
           <button 
             type="button" 
             onClick={close}
-            className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-slate-800 text-slate-400 hover:bg-slate-800 hover:text-slate-100 transition-colors"
+            className="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-pink-100 text-slate-400 hover:bg-pink-50 hover:text-pink-600 transition-colors cursor-pointer"
           >
             &times;
           </button>
         </header>
 
         {error && (
-          <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-400 font-medium">
+          <div className="rounded-lg bg-rose-50 border border-rose-100 p-3 text-xs text-rose-600 font-semibold">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* Segmented control for type */}
-          <div className="grid grid-cols-2 gap-2 p-1 bg-slate-950 rounded-lg border border-slate-800 text-[11px] font-bold">
+          <div className="grid grid-cols-2 gap-2 p-1 bg-pink-50/50 rounded-xl border border-pink-100/50 text-[11px] font-bold">
             <button
               type="button"
               onClick={() => handleTypeChange('EXPENSE')}
-              className={`py-2 px-2.5 rounded-md text-center transition-all ${form.type === 'EXPENSE' ? 'bg-rose-500/15 text-rose-400 border border-rose-500/20' : 'text-slate-400 hover:text-slate-200 border border-transparent'}`}
+              className={`py-2 px-2.5 rounded-lg text-center transition-all cursor-pointer ${form.type === 'EXPENSE' ? 'bg-white text-rose-600 border border-pink-200/50 shadow-sm' : 'text-slate-500 hover:text-pink-500 border border-transparent'}`}
             >
               Despesa
             </button>
             <button
               type="button"
               onClick={() => handleTypeChange('INCOME')}
-              className={`py-2 px-2.5 rounded-md text-center transition-all ${form.type === 'INCOME' ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20' : 'text-slate-400 hover:text-slate-200 border border-transparent'}`}
+              className={`py-2 px-2.5 rounded-lg text-center transition-all cursor-pointer ${form.type === 'INCOME' ? 'bg-white text-emerald-600 border border-pink-200/50 shadow-sm' : 'text-slate-500 hover:text-pink-500 border border-transparent'}`}
             >
               Receita
             </button>
             <button
               type="button"
               onClick={() => handleTypeChange('TRANSFER')}
-              className={`py-2 px-2.5 rounded-md text-center transition-all ${form.type === 'TRANSFER' ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20' : 'text-slate-400 hover:text-slate-200 border border-transparent'}`}
+              className={`py-2 px-2.5 rounded-lg text-center transition-all cursor-pointer ${form.type === 'TRANSFER' ? 'bg-white text-blue-600 border border-pink-200/50 shadow-sm' : 'text-slate-500 hover:text-pink-500 border border-transparent'}`}
             >
               Transferência
             </button>
             <button
               type="button"
               onClick={() => handleTypeChange('PAY_INVOICE')}
-              className={`py-2 px-2.5 rounded-md text-center transition-all ${form.type === 'PAY_INVOICE' ? 'bg-amber-500/15 text-amber-400 border border-amber-500/20' : 'text-slate-400 hover:text-slate-200 border border-transparent'}`}
+              className={`py-2 px-2.5 rounded-lg text-center transition-all cursor-pointer ${form.type === 'PAY_INVOICE' ? 'bg-white text-amber-600 border border-pink-200/50 shadow-sm' : 'text-slate-500 hover:text-pink-500 border border-transparent'}`}
             >
               Pagar Fatura
             </button>
@@ -232,11 +232,11 @@ export function QuickAddModal() {
 
           {form.type === 'PAY_INVOICE' ? (
             <div className="flex flex-col gap-4">
-              <label className="grid gap-1.5 text-xs font-semibold text-slate-300 uppercase tracking-wider">
+              <label className="grid gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wider">
                 Cartão de Crédito
                 <select
                   name="accountId"
-                  className="h-11 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15"
                   value={form.accountId}
                   onChange={handleChange}
                   required
@@ -256,9 +256,9 @@ export function QuickAddModal() {
                 if (!selectedCard) return null
                 const debt = Math.abs(Number(selectedCard.balance))
                 return (
-                  <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-4 text-center animate-in fade-in slide-in-from-top duration-200">
-                    <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider block">Valor da Fatura a Zerar</span>
-                    <strong className="text-xl font-black text-emerald-400 mt-1 block">
+                  <div className="rounded-xl bg-pink-50 border border-pink-100 p-4 text-center animate-in fade-in slide-in-from-top duration-200">
+                    <span className="text-[10px] text-rose-500 font-bold uppercase tracking-wider block">Valor da Fatura a Zerar</span>
+                    <strong className="text-xl font-black text-rose-600 mt-1 block">
                       {Number(debt).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                     </strong>
                   </div>
@@ -275,11 +275,11 @@ export function QuickAddModal() {
               <Input label="Descrição" name="description" value={form.description} onChange={handleChange} required className="h-11" />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <label className="grid gap-1.5 text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                <label className="grid gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wider">
                   {form.type === 'TRANSFER' ? 'Conta Origem' : 'Conta'}
                   <select
                     name="accountId"
-                    className="h-11 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15"
                     value={form.accountId}
                     onChange={handleChange}
                     required
@@ -295,11 +295,11 @@ export function QuickAddModal() {
                 </label>
 
                 {form.type === 'TRANSFER' ? (
-                  <label className="grid gap-1.5 text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                  <label className="grid gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wider">
                     Conta Destino
                     <select
                       name="destinationAccountId"
-                      className="h-11 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                      className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15"
                       value={form.destinationAccountId}
                       onChange={handleChange}
                       required
@@ -316,11 +316,11 @@ export function QuickAddModal() {
                     </select>
                   </label>
                 ) : (
-                  <label className="grid gap-1.5 text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                  <label className="grid gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wider">
                     Categoria
                     <select
                       name="categoryId"
-                      className="h-11 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                      className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15"
                       value={form.categoryId}
                       onChange={handleChange}
                       disabled={loading}
@@ -339,11 +339,11 @@ export function QuickAddModal() {
               </div>
 
               {form.type === 'EXPENSE' && goals.length > 0 && (
-                <label className="grid gap-1.5 text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                <label className="grid gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wider">
                   Meta de Economia (Aporte)
                   <select
                     name="goalId"
-                    className="h-11 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15"
                     value={form.goalId}
                     onChange={handleChange}
                     disabled={loading}
@@ -373,7 +373,7 @@ export function QuickAddModal() {
             <Button 
               type="submit" 
               variant="primary" 
-              className="flex-1 h-11 bg-emerald-600 hover:bg-emerald-500" 
+              className="flex-1 h-11" 
               disabled={saving || loading}
             >
               {saving ? 'Salvando...' : 'Confirmar'}

@@ -33,18 +33,18 @@ function AppShell() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 antialiased">
+    <div className="min-h-screen bg-slate-950 text-slate-100 antialiased" style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-foreground)' }}>
       {/* Top Header */}
-      <header className="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md">
+      <header className="sticky top-0 z-50 border-b border-pink-100/80 bg-white/70 backdrop-blur-md">
         <div className="mx-auto flex flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between max-w-[1400px]">
           <div className="flex items-center justify-between w-full sm:w-auto">
-            <Link to="/" className="text-lg font-bold text-white hover:text-emerald-400 transition-colors duration-200">
+            <Link to="/" className="text-xl font-bold text-rose-600 hover:text-rose-500 transition-colors duration-200 font-sans tracking-tight">
               Financeiro Pessoal
             </Link>
             <div className="flex items-center gap-2 sm:hidden">
               <div 
                 onClick={() => setIsMoreMenuOpen(true)}
-                className="h-7 w-7 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-xs cursor-pointer active:scale-95 transition-all"
+                className="h-8 w-8 rounded-full bg-pink-100 border border-pink-200/50 flex items-center justify-center text-pink-600 font-black text-xs cursor-pointer active:scale-95 transition-all"
               >
                 {user?.name ? user.name[0].toUpperCase() : 'U'}
               </div>
@@ -52,42 +52,42 @@ function AppShell() {
           </div>
           
           {/* Desktop Navigation Links */}
-          <nav className="hidden sm:flex items-center gap-4 text-sm sm:w-auto">
+          <nav className="hidden sm:flex items-center gap-5 text-sm sm:w-auto">
             <Link 
-              className={`font-medium transition-colors duration-200 cursor-pointer shrink-0 ${
-                currentPath === '/' ? 'text-emerald-400' : 'text-slate-400 hover:text-slate-100'
+              className={`font-bold transition-colors duration-200 cursor-pointer shrink-0 ${
+                currentPath === '/' ? 'text-pink-600 border-b-2 border-pink-500 pb-0.5' : 'text-slate-500 hover:text-pink-500'
               }`} 
               to="/"
             >
               Dashboard
             </Link>
             <Link 
-              className={`font-medium transition-colors duration-200 cursor-pointer shrink-0 ${
-                currentPath === '/transactions' ? 'text-emerald-400' : 'text-slate-400 hover:text-slate-100'
+              className={`font-bold transition-colors duration-200 cursor-pointer shrink-0 ${
+                currentPath === '/transactions' ? 'text-pink-600 border-b-2 border-pink-500 pb-0.5' : 'text-slate-500 hover:text-pink-500'
               }`} 
               to="/transactions"
             >
               Lançamentos
             </Link>
             <Link 
-              className={`font-medium transition-colors duration-200 cursor-pointer shrink-0 ${
-                currentPath === '/goals' ? 'text-emerald-400' : 'text-slate-400 hover:text-slate-100'
+              className={`font-bold transition-colors duration-200 cursor-pointer shrink-0 ${
+                currentPath === '/goals' ? 'text-pink-600 border-b-2 border-pink-500 pb-0.5' : 'text-slate-500 hover:text-pink-500'
               }`} 
               to="/goals"
             >
               Objetivos
             </Link>
             <Link 
-              className={`font-medium transition-colors duration-200 cursor-pointer shrink-0 ${
-                currentPath === '/categories' ? 'text-emerald-400' : 'text-slate-400 hover:text-slate-100'
+              className={`font-bold transition-colors duration-200 cursor-pointer shrink-0 ${
+                currentPath === '/categories' ? 'text-pink-600 border-b-2 border-pink-500 pb-0.5' : 'text-slate-500 hover:text-pink-500'
               }`} 
               to="/categories"
             >
               Categorias
             </Link>
             <Link 
-              className={`font-medium transition-colors duration-200 cursor-pointer shrink-0 ${
-                currentPath === '/accounts' ? 'text-emerald-400' : 'text-slate-400 hover:text-slate-100'
+              className={`font-bold transition-colors duration-200 cursor-pointer shrink-0 ${
+                currentPath === '/accounts' ? 'text-pink-600 border-b-2 border-pink-500 pb-0.5' : 'text-slate-500 hover:text-pink-500'
               }`} 
               to="/accounts"
             >
@@ -96,8 +96,8 @@ function AppShell() {
           </nav>
 
           <div className="hidden sm:flex items-center gap-4">
-            <span className="text-slate-300 font-medium">{user?.name}</span>
-            <Button variant="secondary" className="h-9 px-3" onClick={handleLogout}>
+            <span className="text-slate-600 font-bold text-sm">{user?.name}</span>
+            <Button variant="secondary" className="h-9 px-4 !rounded-xl" onClick={handleLogout}>
               Sair
             </Button>
           </div>
@@ -116,11 +116,11 @@ function AppShell() {
       </main>
 
       {/* Mobile Bottom Navigation Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 h-16 bg-slate-900/95 backdrop-blur-md border-t border-slate-800/80 flex items-center justify-around px-2 z-[95] sm:hidden pb-safe">
+      <nav className="fixed bottom-0 left-0 right-0 h-16 bg-white/95 backdrop-blur-md border-t border-pink-100 flex items-center justify-around px-2 z-[95] sm:hidden pb-safe shadow-[0_-4px_16px_rgba(219,39,119,0.04)]">
         <Link 
           to="/" 
           className={`flex flex-col items-center justify-center w-14 h-full gap-0.5 transition-colors duration-200 ${
-            currentPath === '/' ? 'text-emerald-400' : 'text-slate-400'
+            currentPath === '/' ? 'text-pink-600' : 'text-slate-400 hover:text-slate-500'
           }`}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
@@ -132,7 +132,7 @@ function AppShell() {
         <Link 
           to="/transactions" 
           className={`flex flex-col items-center justify-center w-14 h-full gap-0.5 transition-colors duration-200 ${
-            currentPath === '/transactions' ? 'text-emerald-400' : 'text-slate-400'
+            currentPath === '/transactions' ? 'text-pink-600' : 'text-slate-400 hover:text-slate-500'
           }`}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
@@ -145,7 +145,7 @@ function AppShell() {
         <button 
           type="button"
           onClick={() => openQuickAdd('EXPENSE')}
-          className="relative -top-4 w-12 h-12 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30 border-4 border-slate-950 active:scale-95 transition-all duration-200 focus:outline-none"
+          className="relative -top-4 w-12 h-12 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white flex items-center justify-center shadow-lg shadow-pink-500/25 border-4 border-white active:scale-95 transition-all duration-200 focus:outline-none cursor-pointer"
         >
           <span className="text-2xl font-bold leading-none">+</span>
         </button>
@@ -153,7 +153,7 @@ function AppShell() {
         <Link 
           to="/goals" 
           className={`flex flex-col items-center justify-center w-14 h-full gap-0.5 transition-colors duration-200 ${
-            currentPath === '/goals' ? 'text-emerald-400' : 'text-slate-400'
+            currentPath === '/goals' ? 'text-pink-600' : 'text-slate-400 hover:text-slate-500'
           }`}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
@@ -166,7 +166,7 @@ function AppShell() {
           type="button"
           onClick={() => setIsMoreMenuOpen(true)}
           className={`flex flex-col items-center justify-center w-14 h-full gap-0.5 transition-colors duration-200 ${
-            isMoreMenuOpen ? 'text-emerald-400' : 'text-slate-400'
+            isMoreMenuOpen ? 'text-pink-600' : 'text-slate-400 hover:text-slate-500'
           }`}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
@@ -179,24 +179,24 @@ function AppShell() {
       {/* Slide-up "Mais" Menu Drawer */}
       {isMoreMenuOpen && (
         <div 
-          className="fixed inset-0 z-[90] bg-slate-950/80 backdrop-blur-sm sm:hidden animate-in fade-in duration-200"
+          className="fixed inset-0 z-[90] bg-slate-950/20 backdrop-blur-sm sm:hidden animate-in fade-in duration-200"
           onClick={() => setIsMoreMenuOpen(false)}
         >
           <div 
-            className="fixed bottom-20 left-4 right-4 bg-slate-900 border border-slate-800/80 rounded-2xl p-5 shadow-2xl flex flex-col gap-4 animate-in slide-in-from-bottom duration-300"
+            className="fixed bottom-20 left-4 right-4 bg-white border border-pink-100 rounded-2xl p-5 shadow-2xl flex flex-col gap-4 animate-in slide-in-from-bottom duration-300"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-slate-800/60 pb-3">
+            <div className="flex items-center justify-between border-b border-pink-50 pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="h-8 w-8 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-black text-sm">
+                <div className="h-8 w-8 rounded-full bg-pink-100 border border-pink-200/50 flex items-center justify-center text-pink-600 font-black text-sm">
                   {user?.name ? user.name[0].toUpperCase() : 'U'}
                 </div>
-                <span className="text-slate-200 font-bold text-sm">{user?.name}</span>
+                <span className="text-slate-700 font-bold text-sm">{user?.name}</span>
               </div>
               <button 
                 type="button"
                 onClick={() => setIsMoreMenuOpen(false)} 
-                className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-slate-800 text-slate-400 hover:text-slate-200 text-lg font-bold"
+                className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-pink-100 text-slate-400 hover:text-slate-600 text-lg font-bold cursor-pointer"
               >
                 &times;
               </button>
@@ -206,30 +206,30 @@ function AppShell() {
               <Link 
                 to="/categories" 
                 onClick={() => setIsMoreMenuOpen(false)}
-                className="flex items-center justify-between p-3.5 rounded-xl bg-slate-950/50 hover:bg-slate-950 border border-slate-800/40 hover:border-slate-800 transition-all text-sm font-semibold text-slate-300 hover:text-white"
+                className="flex items-center justify-between p-3.5 rounded-xl bg-pink-50/20 hover:bg-pink-50/50 border border-pink-100/50 hover:border-pink-200 transition-all text-sm font-semibold text-slate-600 hover:text-pink-600 cursor-pointer"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-base">🏷️</span>
                   <span>Categorias</span>
                 </div>
-                <span className="text-slate-500 font-bold">&rarr;</span>
+                <span className="text-slate-400 font-bold">&rarr;</span>
               </Link>
               <Link 
                 to="/accounts" 
                 onClick={() => setIsMoreMenuOpen(false)}
-                className="flex items-center justify-between p-3.5 rounded-xl bg-slate-950/50 hover:bg-slate-950 border border-slate-800/40 hover:border-slate-800 transition-all text-sm font-semibold text-slate-300 hover:text-white"
+                className="flex items-center justify-between p-3.5 rounded-xl bg-pink-50/20 hover:bg-pink-50/50 border border-pink-100/50 hover:border-pink-200 transition-all text-sm font-semibold text-slate-600 hover:text-pink-600 cursor-pointer"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-base">💳</span>
                   <span>Contas</span>
                 </div>
-                <span className="text-slate-500 font-bold">&rarr;</span>
+                <span className="text-slate-400 font-bold">&rarr;</span>
               </Link>
             </nav>
 
             <Button 
               variant="danger" 
-              className="w-full h-11 text-sm font-bold bg-red-600 hover:bg-red-500 mt-2" 
+              className="w-full h-11 text-sm font-bold bg-rose-500 hover:bg-rose-600 mt-2" 
               onClick={() => {
                 setIsMoreMenuOpen(false)
                 handleLogout()

@@ -154,11 +154,38 @@ export default function Goals() {
     return diffDays
   }
 
+  function formatRemainingTime(daysLeft) {
+    if (daysLeft === 0) return 'Hoje'
+    
+    const absDays = Math.abs(daysLeft)
+    let text = ''
+    
+    if (absDays >= 365) {
+      const years = Math.floor(absDays / 365)
+      const remainingMonths = Math.floor((absDays % 365) / 30)
+      text = `${years} ${years === 1 ? 'ano' : 'anos'}`
+      if (remainingMonths > 0) {
+        text += ` e ${remainingMonths} ${remainingMonths === 1 ? 'mês' : 'meses'}`
+      }
+    } else if (absDays >= 30) {
+      const months = Math.floor(absDays / 30)
+      const remainingDays = absDays % 30
+      text = `${months} ${months === 1 ? 'mês' : 'meses'}`
+      if (remainingDays > 0) {
+        text += ` e ${remainingDays} ${remainingDays === 1 ? 'dia' : 'dias'}`
+      }
+    } else {
+      text = `${absDays} ${absDays === 1 ? 'dia' : 'dias'}`
+    }
+    
+    return daysLeft < 0 ? `Encerrada (${text} atrás)` : text
+  }
+
   return (
     <div className="grid gap-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-4xl font-extrabold text-white tracking-tight">Metas de Economia</h1>
+          <h1 className="text-4xl font-extrabold text-slate-800 tracking-tight">Metas de Economia</h1>
           <p className="mt-1.5 text-sm text-slate-400">Planeje e acompanhe seus objetivos financeiros de médio e longo prazo</p>
         </div>
         <Button onClick={startCreate} className="self-start">
@@ -167,19 +194,23 @@ export default function Goals() {
       </div>
 
       {error && !showModal && (
-        <p className="rounded-md bg-red-950/50 border border-red-900/50 px-3 py-2 text-sm text-red-400">{error}</p>
+        <p className="rounded-xl bg-rose-50 border border-rose-200 px-3.5 py-2.5 text-sm font-semibold text-rose-600">{error}</p>
       )}
 
       {loading ? (
         <div className="flex h-64 flex-col items-center justify-center gap-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
-          <p className="text-sm text-slate-400 font-medium">Carregando seus objetivos...</p>
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-pink-500 border-t-transparent" />
+          <p className="text-sm text-slate-500 font-medium">Carregando seus objetivos...</p>
         </div>
       ) : goals.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-slate-800 bg-slate-900/20 p-16 text-center shadow-lg">
-          <span className="text-5xl">🎯</span>
+        <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-pink-200 bg-white p-16 text-center shadow-md">
+          <svg className="w-16 h-16 text-pink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <circle cx="12" cy="12" r="6" />
+            <circle cx="12" cy="12" r="2" />
+          </svg>
           <div className="grid gap-1">
-            <h3 className="text-lg font-bold text-white">Nenhum objetivo cadastrado</h3>
+            <h3 className="text-lg font-bold text-slate-800">Nenhum objetivo cadastrado</h3>
             <p className="text-sm text-slate-400 max-w-sm mx-auto">
               Defina metas de poupança (ex: Viagem, Reserva de Emergência) e vincule despesas reais como aportes.
             </p>
@@ -196,24 +227,24 @@ export default function Goals() {
             const percent = target > 0 ? Math.min((current / target) * 100, 100) : 0
             const daysLeft = getDaysRemaining(goal.deadline)
 
-            let progressGradient = 'from-amber-500 to-orange-500'
+            let progressGradient = 'from-pink-300 to-pink-400'
             if (percent >= 100) {
-              progressGradient = 'from-emerald-500 to-teal-400'
+              progressGradient = 'from-emerald-400 to-emerald-500'
             } else if (percent >= 50) {
-              progressGradient = 'from-blue-500 to-indigo-500'
+              progressGradient = 'from-pink-500 to-rose-500'
             }
 
             return (
               <article 
                 key={goal.id} 
-                className="flex flex-col justify-between rounded-xl border border-slate-800/80 bg-slate-900 p-6 shadow-xl hover:border-slate-700/50 hover:shadow-slate-950/40 transition-all duration-300 group"
+                className="card flex flex-col justify-between p-6 shadow-md hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-lg font-bold text-white tracking-tight line-clamp-1 group-hover:text-emerald-400 transition-colors duration-200">
+                    <h3 className="text-lg font-bold text-slate-800 tracking-tight line-clamp-1 group-hover:text-pink-600 transition-colors duration-200">
                       {goal.name}
                     </h3>
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-800 text-slate-400">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-pink-50 text-pink-600 border border-pink-100">
                       {percent.toFixed(0)}%
                     </span>
                   </div>
@@ -222,28 +253,31 @@ export default function Goals() {
                     Prazo: {new Date(goal.deadline).toLocaleDateString('pt-BR')}
                   </p>
 
-                  {/* Barra de progresso */}
                   <div className="mt-5 grid gap-2">
-                    <div className="h-3.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800/60 p-0.5">
+                    <div className="h-3.5 w-full bg-slate-100 rounded-full overflow-hidden border border-slate-200/60 p-0.5 shadow-inner">
                       <div 
                         className={`h-full rounded-full bg-gradient-to-r transition-all duration-700 ease-out ${progressGradient}`} 
                         style={{ width: `${percent}%` }}
                       />
                     </div>
 
-                    <div className="flex items-center justify-between text-xs font-mono mt-1 text-slate-400">
+                    <div className="flex items-center justify-between text-xs font-sans font-bold mt-1 text-slate-500">
                       <span>{formatCurrency(current)}</span>
                       <span>de {formatCurrency(target)}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-slate-800/60 flex flex-col gap-3">
+                <div className="mt-6 pt-4 border-t border-pink-100/60 flex flex-col gap-3">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-slate-400 font-medium">Tempo restante:</span>
-                    <span className={`font-semibold ${daysLeft > 0 ? 'text-emerald-400' : daysLeft === 0 ? 'text-amber-400' : 'text-rose-400'}`}>
-                      {formatRemainingTime(daysLeft)}
-                    </span>
+                    {daysLeft > 0 ? (
+                      <span className="font-semibold text-emerald-600">{formatRemainingTime(daysLeft)}</span>
+                    ) : daysLeft === 0 ? (
+                      <span className="font-bold text-amber-600">Hoje</span>
+                    ) : (
+                      <span className="font-semibold text-rose-600">{formatRemainingTime(daysLeft)}</span>
+                    )}
                   </div>
 
                   <div className="flex gap-2 items-center mt-1">
@@ -276,14 +310,13 @@ export default function Goals() {
         </div>
       )}
 
-      {/* Modal de Criação / Edição de Meta */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
           <form 
             onSubmit={handleSubmit}
-            className="w-full max-w-md grid gap-5 rounded-xl border border-slate-800 bg-slate-900 p-6 shadow-2xl animate-in zoom-in-95 duration-200"
+            className="modal w-full max-w-md grid gap-5 p-6 animate-in zoom-in-95 duration-200"
           >
-            <h2 className="text-xl font-bold text-white tracking-tight">
+            <h2 className="text-xl font-bold text-slate-800 tracking-tight">
               {editingId ? 'Editar Objetivo' : 'Novo Objetivo'}
             </h2>
 
@@ -315,12 +348,12 @@ export default function Goals() {
             />
 
             {error && (
-              <p className="rounded-md bg-red-950/50 border border-red-900/50 px-3 py-2 text-sm text-red-400">
+              <p className="rounded-xl bg-rose-50 border border-rose-200 px-3.5 py-2.5 text-sm font-semibold text-rose-600">
                 {error}
               </p>
             )}
 
-            <div className="flex gap-3 justify-end mt-2 pt-4 border-t border-slate-800">
+            <div className="flex gap-3 justify-end mt-2 pt-4 border-t border-pink-100">
               <Button 
                 variant="secondary" 
                 onClick={() => setShowModal(false)}

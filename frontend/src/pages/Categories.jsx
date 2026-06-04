@@ -102,21 +102,21 @@ export default function Categories() {
   return (
     <div className="grid gap-8">
       <div>
-        <h1 className="text-4xl font-extrabold text-white tracking-tight">Categorias</h1>
+        <h1 className="text-4xl font-extrabold text-slate-800 tracking-tight">Categorias</h1>
         <p className="mt-1.5 text-sm text-slate-400">Organize suas receitas e despesas para obter filtros e relatórios mais precisos</p>
       </div>
 
       <section className="grid gap-6 lg:grid-cols-[360px_1fr]">
-        <form className="grid gap-5 rounded-xl border border-slate-800/80 bg-slate-900 p-5 shadow-xl self-start" onSubmit={handleSubmit}>
-          <h2 className="text-lg font-bold text-white tracking-tight">{editingId ? 'Editar categoria' : 'Nova categoria'}</h2>
+        <form className="card grid gap-5 p-5 self-start" onSubmit={handleSubmit}>
+          <h2 className="text-xl font-bold text-slate-800 tracking-tight">{editingId ? 'Editar categoria' : 'Nova categoria'}</h2>
 
           <Input label="Nome" name="name" value={form.name} onChange={updateForm} required />
 
-          <label className="grid gap-1.5 text-sm font-medium text-slate-300">
+          <label className="grid gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
             Tipo
             <select
               name="type"
-              className="h-10 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+              className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15 cursor-pointer"
               value={form.type}
               onChange={updateForm}
             >
@@ -139,11 +139,11 @@ export default function Categories() {
 
           <Input label="Ícone" name="icon" value={form.icon} onChange={updateForm} required />
 
-          <label className="grid gap-1.5 text-sm font-medium text-slate-300">
+          <label className="grid gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
             Cor
             <div className="flex gap-3">
               <input
-                className="h-10 w-14 rounded-md border border-slate-800 bg-slate-950 p-1 cursor-pointer"
+                className="h-11 w-14 rounded-xl border border-slate-200 bg-white p-1 cursor-pointer transition focus:border-pink-500"
                 type="color"
                 name="color"
                 value={form.color}
@@ -151,7 +151,7 @@ export default function Categories() {
               />
               <input
                 aria-label="Código da cor"
-                className="h-10 flex-1 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                className="h-11 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15"
                 name="color"
                 value={form.color}
                 onChange={updateForm}
@@ -160,7 +160,7 @@ export default function Categories() {
             </div>
           </label>
 
-          {error && <p className="rounded-md bg-red-950/50 border border-red-900/50 px-3 py-2 text-sm text-red-400">{error}</p>}
+          {error && <p className="rounded-xl bg-rose-50 border border-rose-200 px-3.5 py-2.5 text-sm font-semibold text-rose-600">{error}</p>}
 
           <div className="flex gap-2 mt-2">
             <Button type="submit" disabled={saving}>
@@ -180,14 +180,14 @@ export default function Categories() {
           </div>
         </form>
 
-        <article className="rounded-xl border border-slate-800/80 bg-slate-900 shadow-xl overflow-hidden">
-          <div className="border-b border-slate-800 bg-slate-900/50 p-4">
-            <h2 className="text-lg font-bold text-white tracking-tight">Categorias Cadastradas</h2>
+        <article className="card overflow-hidden">
+          <div className="border-b border-pink-100 bg-pink-50/10 p-4">
+            <h2 className="text-xl font-bold text-slate-800 tracking-tight">Categorias Cadastradas</h2>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] text-left text-sm">
-              <thead className="bg-slate-950/40 text-xs uppercase tracking-wider text-slate-400 border-b border-slate-800">
+              <thead className="bg-pink-50/40 text-xs uppercase tracking-wider text-slate-500 border-b border-pink-100">
                 <tr>
                   <th className="px-5 py-4">Nome</th>
                   <th className="px-5 py-4">Tipo</th>
@@ -197,44 +197,44 @@ export default function Categories() {
                   <th className="px-5 py-4 text-right">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-pink-100/50">
                 {loading ? (
                   <tr>
-                    <td className="px-5 py-8 text-slate-400 text-center" colSpan="6">
+                    <td className="px-5 py-8 text-slate-500 text-center" colSpan="6">
                       <div className="flex items-center justify-center gap-3">
-                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-pink-500 border-t-transparent" />
                         Carregando categorias...
                       </div>
                     </td>
                   </tr>
                 ) : categories.length === 0 ? (
                   <tr>
-                    <td className="px-5 py-8 text-slate-500 text-center" colSpan="6">
+                    <td className="px-5 py-8 text-slate-400 text-center" colSpan="6">
                       Nenhuma categoria cadastrada
                     </td>
                   </tr>
                 ) : (
                   categories.map((category) => (
-                    <tr key={category.id} className="hover:bg-slate-950/20 transition-colors duration-150">
-                      <td className="px-5 py-4 font-semibold text-slate-100">{category.name}</td>
-                      <td className="px-5 py-4 text-slate-400">{categoryTypeLabels[category.type]}</td>
-                      <td className="px-5 py-4 font-mono text-xs text-slate-400">
+                    <tr key={category.id} className="hover:bg-pink-50/20 transition-colors duration-150">
+                      <td className="px-5 py-4 font-semibold text-slate-800">{category.name}</td>
+                      <td className="px-5 py-4 text-slate-500">{categoryTypeLabels[category.type]}</td>
+                      <td className="px-5 py-4 font-sans font-bold text-xs text-slate-500">
                         {category.maxLimit !== null && category.maxLimit !== undefined ? (
-                          <span className="font-semibold text-rose-400">
+                          <span className="text-rose-600">
                             {Number(category.maxLimit).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                           </span>
                         ) : (
-                          <span className="text-slate-500">Sem limite</span>
+                          <span className="text-slate-400 font-normal">Sem limite</span>
                         )}
                       </td>
-                      <td className="px-5 py-4 text-slate-400">
-                        <span className="font-mono bg-slate-950/40 px-2 py-1 rounded text-xs text-slate-300 border border-slate-800">
+                      <td className="px-5 py-4 text-slate-500">
+                        <span className="font-mono bg-slate-50 px-2 py-1 rounded text-xs text-slate-600 border border-slate-200">
                           {category.icon}
                         </span>
                       </td>
                       <td className="px-5 py-4">
-                        <span className="inline-flex items-center gap-2 text-slate-300">
-                          <span className="h-4 w-4 rounded-full border border-slate-800 shadow" style={{ background: category.color }} />
+                        <span className="inline-flex items-center gap-2 text-slate-600">
+                          <span className="h-4 w-4 rounded-full border border-slate-200 shadow-sm" style={{ background: category.color }} />
                           <code className="text-xs text-slate-400 font-mono">{category.color}</code>
                         </span>
                       </td>

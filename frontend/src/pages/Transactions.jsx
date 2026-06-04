@@ -353,7 +353,7 @@ export default function Transactions() {
     
     const doc = new jsPDF()
 
-    doc.setFillColor(15, 23, 42)
+    doc.setFillColor(219, 39, 119)
     doc.rect(0, 0, 210, 40, 'F')
     
     doc.setTextColor(255, 255, 255)
@@ -366,7 +366,7 @@ export default function Transactions() {
     doc.text('Relatório Consolidado de Lançamentos', 15, 30)
     doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}`, 130, 30)
 
-    doc.setTextColor(51, 65, 85)
+    doc.setTextColor(61, 46, 50)
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(12)
     doc.text('Filtros Aplicados:', 15, 52)
@@ -397,14 +397,14 @@ export default function Transactions() {
       .reduce((sum, t) => sum + Number(t.amount), 0)
     const netBalance = totalIncome - totalExpense
 
-    doc.setDrawColor(226, 232, 240)
-    doc.setFillColor(248, 250, 252)
+    doc.setDrawColor(243, 232, 235)
+    doc.setFillColor(253, 242, 244)
     doc.rect(15, 65, 55, 20, 'FD')
     doc.rect(77, 65, 55, 20, 'FD')
     doc.rect(140, 65, 55, 20, 'FD')
 
     doc.setFontSize(8)
-    doc.setTextColor(71, 85, 105)
+    doc.setTextColor(120, 110, 115)
     doc.text('TOTAL RECEITAS', 18, 71)
     doc.text('TOTAL DESPESAS', 80, 71)
     doc.text('SALDO LÍQUIDO', 143, 71)
@@ -413,9 +413,9 @@ export default function Transactions() {
     doc.setFont('helvetica', 'bold')
     doc.setTextColor(16, 185, 129)
     doc.text(formatCurrency(totalIncome), 18, 79)
-    doc.setTextColor(239, 68, 68)
+    doc.setTextColor(225, 29, 72)
     doc.text(formatCurrency(totalExpense), 80, 79)
-    doc.setTextColor(netBalance >= 0 ? 16 : 239, netBalance >= 0 ? 185 : 68, netBalance >= 0 ? 129 : 68)
+    doc.setTextColor(netBalance >= 0 ? 16 : 225, netBalance >= 0 ? 185 : 29, netBalance >= 0 ? 129 : 72)
     doc.text(formatCurrency(netBalance), 143, 79)
 
     const tableHeaders = [['Descrição', 'Conta', 'Categoria/Destino', 'Data', 'Tipo', 'Valor']]
@@ -444,8 +444,8 @@ export default function Transactions() {
       head: tableHeaders,
       body: tableRows,
       theme: 'striped',
-      headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontStyle: 'bold' },
-      alternateRowStyles: { fillColor: [248, 250, 252] },
+      headStyles: { fillColor: [219, 39, 119], textColor: [255, 255, 255], fontStyle: 'bold' },
+      alternateRowStyles: { fillColor: [253, 242, 244] },
       columnStyles: {
         5: { halign: 'right', fontStyle: 'bold' }
       },
@@ -461,34 +461,25 @@ export default function Transactions() {
 
   return (
     <div className="grid gap-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-4xl font-extrabold text-white tracking-tight">Lançamentos</h1>
-          <p className="mt-1.5 text-sm text-slate-400">Gerencie e cadastre suas receitas, despesas e transferências</p>
-        </div>
-        <Button 
-          variant="primary" 
-          onClick={() => openQuickAdd('EXPENSE')} 
-          className="lg:hidden h-11 bg-emerald-600 hover:bg-emerald-500 font-bold px-5 rounded-xl shadow-lg shadow-emerald-500/10 cursor-pointer self-start"
-        >
-          + Novo Lançamento
-        </Button>
+      <div>
+        <h1 className="text-4xl font-extrabold text-slate-800 tracking-tight">Lançamentos</h1>
+        <p className="mt-1.5 text-sm text-slate-400">Gerencie e cadastre suas receitas, despesas e transferências</p>
       </div>
 
       <section className="grid gap-6 lg:grid-cols-[320px_1fr]">
-        <form className={`${editingId ? 'grid' : 'hidden lg:grid'} gap-5 rounded-xl border border-slate-800/80 bg-slate-900 p-5 shadow-xl self-start`} onSubmit={handleSubmit}>
-          <h2 className="text-lg font-bold text-white tracking-tight">
+        <form className="card grid gap-5 p-5 self-start" onSubmit={handleSubmit}>
+          <h2 className="text-xl font-bold text-slate-800 tracking-tight">
             {editingId ? 'Editar lançamento' : form.type === 'PAY_INVOICE' ? 'Confirmar Pagamento' : form.isRecurring ? 'Novo agendamento' : 'Novo lançamento'}
           </h2>
 
-          <label className="grid gap-1.5 text-sm font-medium text-slate-300">
+          <label className="grid gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
             Tipo
             <select
               name="type"
-              className="h-10 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+              className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15 cursor-pointer"
               value={form.type}
               onChange={updateForm}
-              disabled={!!editingId} // Não permite alterar tipo na edição
+              disabled={!!editingId}
             >
               <option value="EXPENSE">Despesa</option>
               <option value="INCOME">Receita</option>
@@ -499,11 +490,11 @@ export default function Transactions() {
 
           {form.type === 'PAY_INVOICE' ? (
             <>
-              <label className="grid gap-1.5 text-sm font-medium text-slate-300">
+              <label className="grid gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
                 Cartão de Crédito
                 <select
                   name="accountId"
-                  className="h-10 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15 cursor-pointer"
                   value={form.accountId}
                   onChange={updateForm}
                   required
@@ -528,9 +519,9 @@ export default function Transactions() {
                 if (!selectedCard) return null
                 const debt = Math.abs(Number(selectedCard.balance))
                 return (
-                  <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-4 text-center animate-in fade-in slide-in-from-top duration-200">
-                    <span className="text-xs text-emerald-400 font-semibold uppercase tracking-wider block">Valor da Fatura a Zerar</span>
-                    <strong className="text-xl font-black text-emerald-400 mt-1 block">
+                  <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-4 text-center animate-in fade-in slide-in-from-top duration-200 shadow-sm">
+                    <span className="text-xs text-emerald-600 font-bold uppercase tracking-wider block">Valor da Fatura a Zerar</span>
+                    <strong className="text-2xl font-black text-emerald-600 mt-1 block font-sans">
                       {Number(debt).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                     </strong>
                   </div>
@@ -543,12 +534,11 @@ export default function Transactions() {
               <Input label="Descrição" name="description" value={form.description} onChange={updateForm} required />
               <Input label={form.isRecurring ? "Data de Início" : "Data"} name="date" type="date" value={form.date} onChange={updateForm} required />
 
-              {/* Seleção de Contas */}
-              <label className="grid gap-1.5 text-sm font-medium text-slate-300">
+              <label className="grid gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
                 {form.type === 'TRANSFER' ? 'Conta de Origem' : 'Conta'}
                 <select
                   name="accountId"
-                  className="h-10 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15 cursor-pointer"
                   value={form.accountId}
                   onChange={updateForm}
                   required
@@ -563,11 +553,11 @@ export default function Transactions() {
               </label>
 
               {form.type === 'TRANSFER' ? (
-                <label className="grid gap-1.5 text-sm font-medium text-slate-300">
+                <label className="grid gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
                   Conta de Destino
                   <select
                     name="destinationAccountId"
-                    className="h-10 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15 cursor-pointer"
                     value={form.destinationAccountId}
                     onChange={updateForm}
                     required
@@ -584,11 +574,11 @@ export default function Transactions() {
                 </label>
               ) : (
                 <>
-                  <label className="grid gap-1.5 text-sm font-medium text-slate-300">
+                  <label className="grid gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
                     Categoria
                     <select
                       name="categoryId"
-                      className="h-10 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                      className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15 cursor-pointer"
                       value={form.categoryId}
                       onChange={updateForm}
                     >
@@ -604,11 +594,11 @@ export default function Transactions() {
                   </label>
 
                   {form.type === 'EXPENSE' && (
-                    <label className="grid gap-1.5 text-sm font-medium text-slate-300">
+                    <label className="grid gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
                       Meta de Economia (Aporte)
                       <select
                         name="goalId"
-                        className="h-10 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                        className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15 cursor-pointer"
                         value={form.goalId}
                         onChange={updateForm}
                       >
@@ -624,14 +614,13 @@ export default function Transactions() {
                 </>
               )}
 
-              {/* Recorrência (apenas na criação) */}
               {!editingId && (
-                <div className="grid gap-3 pt-2 border-t border-slate-800/60">
-                  <label className="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
+                <div className="grid gap-3 pt-2 border-t border-slate-100">
+                  <label className="flex items-center gap-2 text-sm text-slate-600 font-medium cursor-pointer">
                     <input
                       type="checkbox"
                       name="isRecurring"
-                      className="h-4 w-4 rounded border-slate-800 bg-slate-950 text-emerald-500 outline-none focus:ring-0"
+                      className="h-4 w-4 rounded border-slate-300 text-pink-500 outline-none focus:ring-pink-500/30"
                       checked={form.isRecurring}
                       onChange={updateForm}
                     />
@@ -639,12 +628,12 @@ export default function Transactions() {
                   </label>
 
                   {form.isRecurring && (
-                    <div className="grid gap-3 pl-6 border-l-2 border-slate-800">
-                      <label className="grid gap-1.5 text-sm font-medium text-slate-300">
+                    <div className="grid gap-3 pl-6 border-l-2 border-pink-200">
+                      <label className="grid gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
                         Frequência
                         <select
                           name="frequency"
-                          className="h-10 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500"
+                          className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15 cursor-pointer"
                           value={form.frequency}
                           onChange={updateForm}
                         >
@@ -669,7 +658,7 @@ export default function Transactions() {
             </>
           )}
 
-          {error && <p className="rounded-md bg-red-950/50 border border-red-900/50 px-3 py-2 text-sm text-red-400">{error}</p>}
+          {error && <p className="rounded-xl bg-rose-50 border border-rose-200 px-3.5 py-2.5 text-sm font-semibold text-rose-600">{error}</p>}
 
           <div className="flex gap-2 mt-2">
             <Button type="submit" disabled={saving}>
@@ -692,15 +681,14 @@ export default function Transactions() {
           </div>
         </form>
 
-        <article className="rounded-xl border border-slate-800/80 bg-slate-900 shadow-xl overflow-hidden self-start">
-          {/* Sub-abas */}
-          <div className="flex border-b border-slate-800 bg-slate-900/50">
+        <article className="card overflow-hidden self-start">
+          <div className="flex border-b border-pink-100/60 bg-pink-50/20">
             <button
               type="button"
               className={`flex-1 py-4 text-sm font-bold tracking-tight border-b-2 outline-none transition-colors duration-200 ${
                 activeTab === 'transactions'
-                  ? 'border-emerald-500 text-emerald-400 bg-slate-950/20'
-                  : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-950/10'
+                  ? 'border-pink-500 text-pink-600 bg-pink-50/40'
+                  : 'border-transparent text-slate-400 hover:text-slate-600 hover:bg-pink-50/10'
               }`}
               onClick={() => setActiveTab('transactions')}
             >
@@ -710,8 +698,8 @@ export default function Transactions() {
               type="button"
               className={`flex-1 py-4 text-sm font-bold tracking-tight border-b-2 outline-none transition-colors duration-200 ${
                 activeTab === 'recurring'
-                  ? 'border-emerald-500 text-emerald-400 bg-slate-950/20'
-                  : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-950/10'
+                  ? 'border-pink-500 text-pink-600 bg-pink-50/40'
+                  : 'border-transparent text-slate-400 hover:text-slate-600 hover:bg-pink-50/10'
               }`}
               onClick={() => setActiveTab('recurring')}
             >
@@ -722,11 +710,11 @@ export default function Transactions() {
           {activeTab === 'transactions' ? (
             <>
               {/* Filtros */}
-              <div className="flex flex-wrap gap-4 border-b border-slate-800 bg-slate-900/50 p-4 items-end">
-                <label className="flex-1 min-w-[160px] grid gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
+              <div className="flex flex-wrap gap-4 border-b border-pink-100 bg-pink-50/10 p-4 items-end">
+                <label className="flex-1 min-w-[160px] grid gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
                   Tipo
                   <select
-                    className="h-10 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15 cursor-pointer"
                     value={filters.type}
                     onChange={(event) => updateFilter('type', event.target.value)}
                   >
@@ -736,10 +724,10 @@ export default function Transactions() {
                     <option value="TRANSFER">Transferências</option>
                   </select>
                 </label>
-                <label className="flex-1 min-w-[160px] grid gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                <label className="flex-1 min-w-[160px] grid gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
                   Conta
                   <select
-                    className="h-10 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15 cursor-pointer"
                     value={filters.accountId}
                     onChange={(event) => updateFilter('accountId', event.target.value)}
                   >
@@ -751,10 +739,10 @@ export default function Transactions() {
                     ))}
                   </select>
                 </label>
-                <label className="flex-1 min-w-[160px] grid gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                <label className="flex-1 min-w-[160px] grid gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
                   Categoria
                   <select
-                    className="h-10 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15 cursor-pointer"
                     value={filters.categoryId}
                     onChange={(event) => updateFilter('categoryId', event.target.value)}
                   >
@@ -802,7 +790,7 @@ export default function Transactions() {
               {/* Tabela de Lançamentos */}
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[760px] text-left text-sm">
-                  <thead className="bg-slate-950/40 text-xs uppercase tracking-wider text-slate-400 border-b border-slate-800">
+                  <thead className="bg-pink-50/40 text-xs uppercase tracking-wider text-slate-500 border-b border-pink-100">
                     <tr>
                       <th className="px-5 py-4">Descrição</th>
                       <th className="px-5 py-4">Origem / Conta</th>
@@ -813,19 +801,19 @@ export default function Transactions() {
                       <th className="px-5 py-4 text-right">Ações</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60">
+                  <tbody className="divide-y divide-pink-100/50">
                     {loading ? (
                       <tr>
-                        <td className="px-5 py-8 text-slate-400 text-center" colSpan="7">
+                        <td className="px-5 py-8 text-slate-500 text-center" colSpan="7">
                           <div className="flex items-center justify-center gap-3">
-                            <div className="h-5 w-5 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+                            <div className="h-5 w-5 animate-spin rounded-full border-2 border-pink-500 border-t-transparent" />
                             Carregando lançamentos...
                           </div>
                         </td>
                       </tr>
                     ) : transactions.length === 0 ? (
                       <tr>
-                        <td className="px-5 py-8 text-slate-500 text-center" colSpan="7">
+                        <td className="px-5 py-8 text-slate-400 text-center" colSpan="7">
                           Nenhum lançamento encontrado
                         </td>
                       </tr>
@@ -834,30 +822,30 @@ export default function Transactions() {
                         const isIncome = transaction.type === 'INCOME'
                         const isExpense = transaction.type === 'EXPENSE'
                         const isTransfer = transaction.type === 'TRANSFER'
-                        const valColor = isIncome ? 'text-emerald-400' : isExpense ? 'text-rose-400' : 'text-blue-400'
+                        const valColor = isIncome ? 'text-emerald-600 font-sans' : isExpense ? 'text-rose-600 font-sans' : 'text-sky-600 font-sans'
 
                         return (
-                          <tr key={transaction.id} className="hover:bg-slate-950/20 transition-colors duration-150">
-                            <td className="px-5 py-4 font-semibold text-slate-100">{transaction.description}</td>
-                            <td className="px-5 py-4 text-slate-300">
+                          <tr key={transaction.id} className="hover:bg-pink-50/20 transition-colors duration-150">
+                            <td className="px-5 py-4 font-semibold text-slate-800">{transaction.description}</td>
+                            <td className="px-5 py-4 text-slate-600">
                               {transaction.account ? (
                                 <span className="inline-flex items-center gap-1.5">
                                   <span className="h-2 w-2 rounded-full" style={{ backgroundColor: transaction.account.color }} />
                                   {transaction.account.name}
                                 </span>
                               ) : (
-                                <span className="text-slate-500">-</span>
+                                <span className="text-slate-400">-</span>
                               )}
                             </td>
                             <td className="px-5 py-4">
                               {isTransfer ? (
                                 transaction.destinationAccount ? (
-                                  <span className="inline-flex items-center gap-1.5 text-blue-400">
+                                  <span className="inline-flex items-center gap-1.5 text-sky-600">
                                     <span className="h-2 w-2 rounded-full" style={{ backgroundColor: transaction.destinationAccount.color }} />
                                     {transaction.destinationAccount.name}
                                   </span>
                                 ) : (
-                                  <span className="text-slate-500">-</span>
+                                  <span className="text-slate-400">-</span>
                                 )
                               ) : (
                                 <div className="flex flex-col gap-1 items-start">
@@ -873,21 +861,26 @@ export default function Transactions() {
                                       {transaction.category.name}
                                     </span>
                                   ) : (
-                                    <span className="text-slate-500">-</span>
+                                    <span className="text-slate-400">-</span>
                                   )}
                                   {transaction.goal && (
                                     <span 
-                                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-violet-500/10 border border-violet-500/30 text-violet-400 text-[10px] font-bold uppercase tracking-wider"
+                                      className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-violet-50 border border-violet-100 text-violet-600 text-[10px] font-bold uppercase tracking-wider"
                                       title={`Meta: ${transaction.goal.name}`}
                                     >
-                                      🎯 {transaction.goal.name}
+                                      <svg className="w-3 h-3 text-violet-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <circle cx="12" cy="12" r="6" />
+                                        <circle cx="12" cy="12" r="2" />
+                                      </svg>
+                                      {transaction.goal.name}
                                     </span>
                                   )}
                                 </div>
                               )}
                             </td>
-                            <td className="px-5 py-4 text-slate-400">{new Date(transaction.date).toLocaleDateString('pt-BR')}</td>
-                            <td className="px-5 py-4 text-slate-400">{transactionTypeLabels[transaction.type]}</td>
+                            <td className="px-5 py-4 text-slate-500">{new Date(transaction.date).toLocaleDateString('pt-BR')}</td>
+                            <td className="px-5 py-4 text-slate-500">{transactionTypeLabels[transaction.type]}</td>
                             <td className={`px-5 py-4 text-right font-bold ${valColor}`}>
                               {isIncome ? '+ ' : isExpense ? '- ' : ''}
                               {formatCurrency(transaction.amount)}
@@ -911,7 +904,7 @@ export default function Transactions() {
               </div>
 
               {/* Paginação */}
-              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-800 p-4 text-sm text-slate-400 bg-slate-950/20">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-pink-100 p-4 text-sm text-slate-500 bg-pink-50/10">
                 <span>
                   <strong>{meta.total}</strong> lançamento{meta.total === 1 ? '' : 's'} encontrado{meta.total === 1 ? '' : 's'}
                 </span>
@@ -924,7 +917,7 @@ export default function Transactions() {
                   >
                     Anterior
                   </Button>
-                  <span className="text-xs font-semibold text-slate-400 select-none">
+                  <span className="text-xs font-bold text-slate-500 select-none">
                     Página {meta.pages === 0 ? 0 : meta.page} de {meta.pages}
                   </span>
                   <Button
@@ -942,7 +935,7 @@ export default function Transactions() {
             /* Tabela de Lançamentos Recorrentes */
             <div className="overflow-x-auto">
               <table className="w-full min-w-[760px] text-left text-sm">
-                <thead className="bg-slate-950/40 text-xs uppercase tracking-wider text-slate-400 border-b border-slate-800">
+                <thead className="bg-pink-50/40 text-xs uppercase tracking-wider text-slate-500 border-b border-pink-100">
                   <tr>
                     <th className="px-5 py-4">Descrição</th>
                     <th className="px-5 py-4">Tipo</th>
@@ -955,19 +948,19 @@ export default function Transactions() {
                     <th className="px-5 py-4 text-right">Ações</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60">
+                <tbody className="divide-y divide-pink-100/50">
                   {loading ? (
                     <tr>
-                      <td className="px-5 py-8 text-slate-400 text-center" colSpan="9">
+                      <td className="px-5 py-8 text-slate-500 text-center" colSpan="9">
                         <div className="flex items-center justify-center gap-3">
-                          <div className="h-5 w-5 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+                          <div className="h-5 w-5 animate-spin rounded-full border-2 border-pink-500 border-t-transparent" />
                           Carregando agendamentos...
                         </div>
                       </td>
                     </tr>
                   ) : recurringRules.length === 0 ? (
                     <tr>
-                      <td className="px-5 py-8 text-slate-500 text-center" colSpan="9">
+                      <td className="px-5 py-8 text-slate-400 text-center" colSpan="9">
                         Nenhum lançamento recorrente agendado
                       </td>
                     </tr>
@@ -976,31 +969,31 @@ export default function Transactions() {
                       const isIncome = rule.type === 'INCOME'
                       const isExpense = rule.type === 'EXPENSE'
                       const isTransfer = rule.type === 'TRANSFER'
-                      const valColor = isIncome ? 'text-emerald-400' : isExpense ? 'text-rose-400' : 'text-blue-400'
+                      const valColor = isIncome ? 'text-emerald-600 font-sans' : isExpense ? 'text-rose-600 font-sans' : 'text-sky-600 font-sans'
 
                       return (
-                        <tr key={rule.id} className="hover:bg-slate-950/20 transition-colors duration-150">
-                          <td className="px-5 py-4 font-semibold text-slate-100">{rule.description}</td>
-                          <td className="px-5 py-4 text-slate-400">{transactionTypeLabels[rule.type]}</td>
-                          <td className="px-5 py-4 text-slate-300">
+                        <tr key={rule.id} className="hover:bg-pink-50/20 transition-colors duration-150">
+                          <td className="px-5 py-4 font-semibold text-slate-800">{rule.description}</td>
+                          <td className="px-5 py-4 text-slate-500">{transactionTypeLabels[rule.type]}</td>
+                          <td className="px-5 py-4 text-slate-600">
                             {rule.account ? (
                               <span className="inline-flex items-center gap-1.5">
                                 <span className="h-2 w-2 rounded-full" style={{ backgroundColor: rule.account.color }} />
                                 {rule.account.name}
                               </span>
                             ) : (
-                              <span className="text-slate-500">-</span>
+                              <span className="text-slate-400">-</span>
                             )}
                           </td>
                           <td className="px-5 py-4">
                             {isTransfer ? (
                               rule.destinationAccount ? (
-                                <span className="inline-flex items-center gap-1.5 text-blue-400">
+                                <span className="inline-flex items-center gap-1.5 text-sky-600">
                                   <span className="h-2 w-2 rounded-full" style={{ backgroundColor: rule.destinationAccount.color }} />
                                   {rule.destinationAccount.name}
                                 </span>
                               ) : (
-                                <span className="text-slate-500">-</span>
+                                <span className="text-slate-400">-</span>
                               )
                             ) : rule.category ? (
                               <span
@@ -1014,11 +1007,11 @@ export default function Transactions() {
                                 {rule.category.name}
                               </span>
                             ) : (
-                              <span className="text-slate-500">-</span>
+                              <span className="text-slate-400">-</span>
                             )}
                           </td>
-                          <td className="px-5 py-4 text-slate-300 font-semibold">{frequencyLabels[rule.frequency]}</td>
-                          <td className="px-5 py-4 text-slate-400">
+                          <td className="px-5 py-4 text-slate-600 font-semibold">{frequencyLabels[rule.frequency]}</td>
+                          <td className="px-5 py-4 text-slate-500">
                             {new Date(rule.nextDueDate).toLocaleDateString('pt-BR')}
                           </td>
                           <td className={`px-5 py-4 text-right font-bold ${valColor}`}>
@@ -1030,8 +1023,8 @@ export default function Transactions() {
                               type="button"
                               className={`px-2.5 py-1 rounded text-xs font-bold transition border cursor-pointer ${
                                 rule.isActive
-                                  ? 'bg-emerald-950/40 border-emerald-800 text-emerald-400 hover:bg-emerald-900/40'
-                                  : 'bg-slate-950/40 border-slate-800 text-slate-500 hover:bg-slate-900/40'
+                                  ? 'bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100/50'
+                                  : 'bg-slate-50 border-slate-200 text-slate-400 hover:bg-slate-100/50'
                               }`}
                               onClick={() => toggleRecurringRule(rule)}
                             >
