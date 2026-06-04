@@ -42,14 +42,6 @@ export default function Transactions() {
   const location = useLocation()
   const [transactions, setTransactions] = useState([])
   const [categories, setCategories] = useState([])
-
-  useEffect(() => {
-    const handleSave = () => {
-      loadData()
-    }
-    window.addEventListener('transaction-saved', handleSave)
-    return () => window.removeEventListener('transaction-saved', handleSave)
-  }, [filteredParams])
   const [accounts, setAccounts] = useState([])
   const [goals, setGoals] = useState([])
   const [recurringRules, setRecurringRules] = useState([])
