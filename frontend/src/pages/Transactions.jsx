@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { api, getApiError } from '../services/api'
@@ -15,6 +16,7 @@ const initialForm = {
   isRecurring: false,
   frequency: 'MONTHLY',
   endDate: '',
+  goalId: '',
 }
 
 const initialFilters = {
@@ -35,9 +37,11 @@ const frequencyLabels = {
 }
 
 export default function Transactions() {
+  const location = useLocation()
   const [transactions, setTransactions] = useState([])
   const [categories, setCategories] = useState([])
   const [accounts, setAccounts] = useState([])
+  const [goals, setGoals] = useState([])
   const [recurringRules, setRecurringRules] = useState([])
   const [meta, setMeta] = useState({ total: 0, page: 1, limit: 10, pages: 0 })
   const [form, setForm] = useState(initialForm)
@@ -57,17 +61,19 @@ export default function Transactions() {
     setError('')
 
     try {
-      const [{ data: txData }, { data: categoryData }, { data: accountData }, { data: recurringData }] = await Promise.all([
+      const [{ data: txData }, { data: categoryData }, { data: accountData }, { data: recurringData }, { data: goalsData }] = await Promise.all([
         api.get('/transactions', { params: filteredParams }),
         api.get('/categories'),
         api.get('/accounts'),
         api.get('/recurring-transactions'),
+        api.get('/goals'),
       ])
       setTransactions(txData.data)
       setMeta(txData.meta)
       setCategories(categoryData)
       setAccounts(accountData)
       setRecurringRules(recurringData)
+      setGoals(goalsData)
 
       // Pré-selecionar conta se estiver vazia e houver contas
       if (!form.accountId && accountData.length > 0) {
@@ -83,6 +89,17 @@ export default function Transactions() {
   useEffect(() => {
     loadData()
   }, [filteredParams])
+
+  useEffect(() => {
+    if (location.state?.goalId) {
+      setForm((current) => ({
+        ...current,
+        type: location.state.type || 'EXPENSE',
+        goalId: location.state.goalId,
+      }))
+      window.history.replaceState({}, document.title)
+    }
+  }, [location])
 
   function updateForm(event) {
     const { name, value, type, checked } = event.target
@@ -197,6 +214,7 @@ export default function Transactions() {
       categoryId: form.type === 'TRANSFER' ? null : (form.categoryId || null),
       accountId: form.accountId,
       destinationAccountId: form.type === 'TRANSFER' ? form.destinationAccountId : null,
+      goalId: form.type === 'EXPENSE' ? (form.goalId || null) : null,
     }
 
     try {
@@ -233,6 +251,7 @@ export default function Transactions() {
       isRecurring: false,
       frequency: 'MONTHLY',
       endDate: '',
+      goalId: transaction.goalId ?? '',
     })
   }
 
@@ -270,6 +289,153 @@ export default function Transactions() {
     } catch (err) {
       setError(getApiError(err, 'Não foi possível excluir o agendamento'))
     }
+  }
+
+  function exportToCSV() {
+    const headers = ['Descrição', 'Conta', 'Categoria/Destino', 'Data', 'Tipo', 'Valor']
+    
+    const rows = transactions.map((tx) => {
+      const isTransfer = tx.type === 'TRANSFER'
+      const destinationOrCategory = isTransfer 
+        ? (tx.destinationAccount?.name ?? '') 
+        : (tx.category?.name ?? '')
+      const accountName = tx.account?.name ?? ''
+      const amount = Number(tx.amount).toFixed(2).replace('.', ',')
+      const formattedDate = new Date(tx.date).toLocaleDateString('pt-BR')
+      const typeLabel = transactionTypeLabels[tx.type] ?? tx.type
+
+      return [
+        `"${tx.description.replace(/"/g, '""')}"`,
+        `"${accountName.replace(/"/g, '""')}"`,
+        `"${destinationOrCategory.replace(/"/g, '""')}"`,
+        `"${formattedDate}"`,
+        `"${typeLabel}"`,
+        `"${amount}"`
+      ]
+    })
+
+    const csvContent = [
+      headers.join(';'),
+      ...rows.map((row) => row.join(';'))
+    ].join('\r\n')
+
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.setAttribute('href', url)
+    link.setAttribute('download', `lancamentos_${new Date().toISOString().slice(0, 10)}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  async function exportToPDF() {
+    const { jsPDF } = await import('jspdf')
+    const { default: autoTable } = await import('jspdf-autotable')
+    
+    const doc = new jsPDF()
+
+    doc.setFillColor(15, 23, 42)
+    doc.rect(0, 0, 210, 40, 'F')
+    
+    doc.setTextColor(255, 255, 255)
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(22)
+    doc.text('CONTROLE FINANCEIRO PESSOAL', 15, 20)
+    
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(10)
+    doc.text('Relatório Consolidado de Lançamentos', 15, 30)
+    doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}`, 130, 30)
+
+    doc.setTextColor(51, 65, 85)
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(12)
+    doc.text('Filtros Aplicados:', 15, 52)
+    
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(9)
+    const filterDesc = []
+    if (filters.type) filterDesc.push(`Tipo: ${transactionTypeLabels[filters.type]}`)
+    if (filters.accountId) {
+      const acc = accounts.find((a) => a.id === filters.accountId)
+      if (acc) filterDesc.push(`Conta: ${acc.name}`)
+    }
+    if (filters.categoryId) {
+      const cat = categories.find((c) => c.id === filters.categoryId)
+      if (cat) filterDesc.push(`Categoria: ${cat.name}`)
+    }
+    if (filters.startDate) filterDesc.push(`Início: ${new Date(filters.startDate).toLocaleDateString('pt-BR')}`)
+    if (filters.endDate) filterDesc.push(`Fim: ${new Date(filters.endDate).toLocaleDateString('pt-BR')}`)
+    
+    const filterText = filterDesc.length > 0 ? filterDesc.join(' | ') : 'Nenhum (Todos os lançamentos)'
+    doc.text(filterText, 15, 58)
+
+    const totalIncome = transactions
+      .filter((t) => t.type === 'INCOME')
+      .reduce((sum, t) => sum + Number(t.amount), 0)
+    const totalExpense = transactions
+      .filter((t) => t.type === 'EXPENSE')
+      .reduce((sum, t) => sum + Number(t.amount), 0)
+    const netBalance = totalIncome - totalExpense
+
+    doc.setDrawColor(226, 232, 240)
+    doc.setFillColor(248, 250, 252)
+    doc.rect(15, 65, 55, 20, 'FD')
+    doc.rect(77, 65, 55, 20, 'FD')
+    doc.rect(140, 65, 55, 20, 'FD')
+
+    doc.setFontSize(8)
+    doc.setTextColor(71, 85, 105)
+    doc.text('TOTAL RECEITAS', 18, 71)
+    doc.text('TOTAL DESPESAS', 80, 71)
+    doc.text('SALDO LÍQUIDO', 143, 71)
+
+    doc.setFontSize(12)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor(16, 185, 129)
+    doc.text(formatCurrency(totalIncome), 18, 79)
+    doc.setTextColor(239, 68, 68)
+    doc.text(formatCurrency(totalExpense), 80, 79)
+    doc.setTextColor(netBalance >= 0 ? 16 : 239, netBalance >= 0 ? 185 : 68, netBalance >= 0 ? 129 : 68)
+    doc.text(formatCurrency(netBalance), 143, 79)
+
+    const tableHeaders = [['Descrição', 'Conta', 'Categoria/Destino', 'Data', 'Tipo', 'Valor']]
+    const tableRows = transactions.map((tx) => {
+      const isTransfer = tx.type === 'TRANSFER'
+      const destinationOrCategory = isTransfer 
+        ? (tx.destinationAccount?.name ?? '-') 
+        : (tx.category?.name ?? '-')
+      const accountName = tx.account?.name ?? '-'
+      const formattedDate = new Date(tx.date).toLocaleDateString('pt-BR')
+      const typeLabel = transactionTypeLabels[tx.type] ?? tx.type
+      const valueStr = `${tx.type === 'EXPENSE' ? '- ' : tx.type === 'INCOME' ? '+ ' : ''}${formatCurrency(tx.amount)}`
+      
+      return [
+        tx.description,
+        accountName,
+        destinationOrCategory,
+        formattedDate,
+        typeLabel,
+        valueStr
+      ]
+    })
+
+    autoTable(doc, {
+      startY: 92,
+      head: tableHeaders,
+      body: tableRows,
+      theme: 'striped',
+      headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontStyle: 'bold' },
+      alternateRowStyles: { fillColor: [248, 250, 252] },
+      columnStyles: {
+        5: { halign: 'right', fontStyle: 'bold' }
+      },
+      styles: { fontSize: 9, cellPadding: 3.5 },
+      margin: { left: 15, right: 15 }
+    })
+
+    doc.save(`relatorio_financeiro_${new Date().toISOString().slice(0, 10)}.pdf`)
   }
 
   const canGoBack = meta.page > 1
@@ -390,24 +556,45 @@ export default function Transactions() {
                   </select>
                 </label>
               ) : (
-                <label className="grid gap-1.5 text-sm font-medium text-slate-300">
-                  Categoria
-                  <select
-                    name="categoryId"
-                    className="h-10 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-                    value={form.categoryId}
-                    onChange={updateForm}
-                  >
-                    <option value="">Sem categoria</option>
-                    {categories
-                      .filter((cat) => form.type === 'BOTH' || cat.type === 'BOTH' || cat.type === form.type)
-                      .map((category) => (
-                        <option key={category.id} value={category.id}>
-                          {category.name}
-                        </option>
-                      ))}
-                  </select>
-                </label>
+                <>
+                  <label className="grid gap-1.5 text-sm font-medium text-slate-300">
+                    Categoria
+                    <select
+                      name="categoryId"
+                      className="h-10 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                      value={form.categoryId}
+                      onChange={updateForm}
+                    >
+                      <option value="">Sem categoria</option>
+                      {categories
+                        .filter((cat) => form.type === 'BOTH' || cat.type === 'BOTH' || cat.type === form.type)
+                        .map((category) => (
+                          <option key={category.id} value={category.id}>
+                            {category.name}
+                          </option>
+                        ))}
+                    </select>
+                  </label>
+
+                  {form.type === 'EXPENSE' && (
+                    <label className="grid gap-1.5 text-sm font-medium text-slate-300">
+                      Meta de Economia (Aporte)
+                      <select
+                        name="goalId"
+                        className="h-10 rounded-md border border-slate-800 bg-slate-950 px-3 text-sm text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                        value={form.goalId}
+                        onChange={updateForm}
+                      >
+                        <option value="">Sem meta (Não é aporte)</option>
+                        {goals.map((g) => (
+                          <option key={g.id} value={g.id}>
+                            {g.name} (Alvo: R$ {Number(g.targetAmount).toFixed(2)})
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
+                </>
               )}
 
               {/* Recorrência (apenas na criação) */}
@@ -573,6 +760,16 @@ export default function Transactions() {
                     Limpar Filtros
                   </Button>
                 </div>
+                <div className="flex-1 min-w-[140px]">
+                  <Button variant="secondary" className="w-full h-10 cursor-pointer" onClick={exportToCSV}>
+                    Exportar CSV
+                  </Button>
+                </div>
+                <div className="flex-1 min-w-[140px]">
+                  <Button variant="secondary" className="w-full h-10 cursor-pointer" onClick={exportToPDF}>
+                    Exportar PDF
+                  </Button>
+                </div>
               </div>
 
               {/* Tabela de Lançamentos */}
@@ -635,19 +832,31 @@ export default function Transactions() {
                                 ) : (
                                   <span className="text-slate-500">-</span>
                                 )
-                              ) : transaction.category ? (
-                                <span
-                                  className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border"
-                                  style={{
-                                    backgroundColor: `${transaction.category.color}15`,
-                                    borderColor: `${transaction.category.color}40`,
-                                    color: transaction.category.color,
-                                  }}
-                                >
-                                  {transaction.category.name}
-                                </span>
                               ) : (
-                                <span className="text-slate-500">-</span>
+                                <div className="flex flex-col gap-1 items-start">
+                                  {transaction.category ? (
+                                    <span
+                                      className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border"
+                                      style={{
+                                        backgroundColor: `${transaction.category.color}15`,
+                                        borderColor: `${transaction.category.color}40`,
+                                        color: transaction.category.color,
+                                      }}
+                                    >
+                                      {transaction.category.name}
+                                    </span>
+                                  ) : (
+                                    <span className="text-slate-500">-</span>
+                                  )}
+                                  {transaction.goal && (
+                                    <span 
+                                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-violet-500/10 border border-violet-500/30 text-violet-400 text-[10px] font-bold uppercase tracking-wider"
+                                      title={`Meta: ${transaction.goal.name}`}
+                                    >
+                                      🎯 {transaction.goal.name}
+                                    </span>
+                                  )}
+                                </div>
                               )}
                             </td>
                             <td className="px-5 py-4 text-slate-400">{new Date(transaction.date).toLocaleDateString('pt-BR')}</td>

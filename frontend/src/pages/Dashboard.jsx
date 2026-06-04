@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import { MonthlyBarChart } from '../components/charts/BarChart'
 import { Button } from '../components/ui/Button'
@@ -35,6 +36,7 @@ export default function Dashboard() {
   const [transactions, setTransactions] = useState([])
   const [categories, setCategories] = useState([])
   const [accounts, setAccounts] = useState([])
+  const [goals, setGoals] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -45,17 +47,20 @@ export default function Dashboard() {
           { data: summaryData },
           { data: transactionsData },
           { data: categoriesData },
-          { data: accountsData }
+          { data: accountsData },
+          { data: goalsData }
         ] = await Promise.all([
           api.get('/transactions/summary', { params: { month, year } }),
           api.get('/transactions', { params: { limit: 100 } }),
           api.get('/categories'),
           api.get('/accounts'),
+          api.get('/goals'),
         ])
         setSummary(summaryData)
         setTransactions(transactionsData.data)
         setCategories(categoriesData)
         setAccounts(accountsData)
+        setGoals(goalsData)
       } catch (err) {
         console.error('Não foi possível carregar o dashboard', err)
       } finally {
@@ -156,6 +161,22 @@ export default function Dashboard() {
   const exceededBudgets = useMemo(() => {
     return budgetProgress.filter((b) => b.spent > b.limit)
   }, [budgetProgress])
+
+  const closestGoals = useMemo(() => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    
+    return [...goals]
+      .map(goal => {
+        const deadline = new Date(goal.deadline)
+        deadline.setHours(0, 0, 0, 0)
+        const diffTime = deadline.getTime() - today.getTime()
+        const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+        return { ...goal, daysLeft }
+      })
+      .sort((a, b) => a.daysLeft - b.daysLeft)
+      .slice(0, 3)
+  }, [goals])
 
   const accountTypeLabels = {
     CHECKING: 'Conta Corrente',
@@ -263,7 +284,7 @@ export default function Dashboard() {
         </article>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-3">
+      <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <article className="rounded-xl border border-slate-800/80 bg-slate-900 p-6 shadow-xl transition-all hover:border-slate-700/50">
           <h2 className="text-lg font-bold text-white tracking-tight">Minhas Contas</h2>
           <p className="text-xs text-slate-400 mt-1 mb-6">Saldos atuais em suas carteiras e contas</p>
@@ -363,6 +384,78 @@ export default function Dashboard() {
               })
             )}
           </div>
+        </article>
+
+        <article className="rounded-xl border border-slate-800/80 bg-slate-900 p-6 shadow-xl transition-all hover:border-slate-700/50 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <h2 className="text-lg font-bold text-white tracking-tight">Metas de Economia</h2>
+              <Link to="/goals" className="text-xs text-emerald-400 font-bold hover:text-emerald-300 transition-colors">
+                Ver todos &rarr;
+              </Link>
+            </div>
+            <p className="text-xs text-slate-400 mb-6">Objetivos mais próximos do prazo final</p>
+            
+            <div className="grid gap-5">
+              {closestGoals.length === 0 ? (
+                <div className="flex h-48 flex-col items-center justify-center gap-2 text-slate-500">
+                  <span className="text-3xl">🎯</span>
+                  <p className="text-sm text-center">Nenhum objetivo ativo</p>
+                </div>
+              ) : (
+                closestGoals.map((goal) => {
+                  const target = Number(goal.targetAmount)
+                  const current = Number(goal.currentAmount)
+                  const percent = target > 0 ? Math.min((current / target) * 100, 100) : 0
+                  
+                  const barColor = 
+                    percent >= 100 
+                      ? 'bg-gradient-to-r from-emerald-500 to-teal-400' 
+                      : percent >= 50 
+                        ? 'bg-gradient-to-r from-blue-500 to-indigo-500' 
+                        : 'bg-gradient-to-r from-amber-500 to-orange-500'
+                  
+                  return (
+                    <div key={goal.id} className="grid gap-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="font-semibold text-slate-200 line-clamp-1" title={goal.name}>
+                          {goal.name}
+                        </span>
+                        <span className="text-[10px] font-bold text-slate-400 font-mono">
+                          {goal.daysLeft > 0 ? (
+                            <span className="text-emerald-400">{goal.daysLeft}d restantes</span>
+                          ) : goal.daysLeft === 0 ? (
+                            <span className="text-amber-400">Hoje!</span>
+                          ) : (
+                            <span className="text-rose-400">Encerrado</span>
+                          )}
+                        </span>
+                      </div>
+                      <div className="h-2.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800/50 p-0.5">
+                        <div 
+                          className={`h-full rounded-full transition-all duration-500 ${barColor}`} 
+                          style={{ width: `${percent}%` }}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
+                        <span>{currency.format(current)}</span>
+                        <span>{percent.toFixed(0)}%</span>
+                      </div>
+                    </div>
+                  )
+                })
+              )}
+            </div>
+          </div>
+          {closestGoals.length > 0 && (
+            <div className="mt-5 pt-3 border-t border-slate-800/60 text-center">
+              <Link to="/goals">
+                <Button variant="secondary" className="w-full text-xs h-8">
+                  Ir para Objetivos
+                </Button>
+              </Link>
+            </div>
+          )}
         </article>
 
         <article className="rounded-xl border border-slate-800/80 bg-slate-900 p-6 shadow-xl transition-all hover:border-slate-700/50">

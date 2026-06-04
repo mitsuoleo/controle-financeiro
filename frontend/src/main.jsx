@@ -9,6 +9,7 @@ import Categories from './pages/Categories'
 import Login from './pages/Login'
 import Transactions from './pages/Transactions'
 import Accounts from './pages/Accounts'
+import Goals from './pages/Goals'
 import { useAuthStore } from './store/authStore'
 
 function AppShell() {
@@ -38,6 +39,9 @@ function AppShell() {
             <Link className="font-medium text-slate-400 hover:text-slate-100 transition-colors duration-200 cursor-pointer" to="/transactions">
               Lançamentos
             </Link>
+            <Link className="font-medium text-slate-400 hover:text-slate-100 transition-colors duration-200 cursor-pointer" to="/goals">
+              Objetivos
+            </Link>
             <Link className="font-medium text-slate-400 hover:text-slate-100 transition-colors duration-200 cursor-pointer" to="/categories">
               Categorias
             </Link>
@@ -55,6 +59,7 @@ function AppShell() {
         <Routes>
           <Route index element={<Dashboard />} />
           <Route path="transactions" element={<Transactions />} />
+          <Route path="goals" element={<Goals />} />
           <Route path="categories" element={<Categories />} />
           <Route path="accounts" element={<Accounts />} />
         </Routes>
