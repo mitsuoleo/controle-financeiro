@@ -2,8 +2,16 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import axios from 'axios'
 
+function getBaseURL() {
+  const url = import.meta.env.VITE_API_URL ?? 'http://localhost:3333/api'
+  if (url && !url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('/')) {
+    return `https://${url}`
+  }
+  return url
+}
+
 const authApi = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:3333/api',
+  baseURL: getBaseURL(),
 })
 
 export const useAuthStore = create(
