@@ -101,6 +101,14 @@ export default function Transactions() {
   }, [filteredParams])
 
   useEffect(() => {
+    const handleSave = () => {
+      loadData()
+    }
+    window.addEventListener('transaction-saved', handleSave)
+    return () => window.removeEventListener('transaction-saved', handleSave)
+  }, [filteredParams])
+
+  useEffect(() => {
     if (location.state?.goalId) {
       setForm((current) => ({
         ...current,
