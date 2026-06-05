@@ -15,17 +15,59 @@ const monthsList = [
 ]
 
 function StatCard({ label, value, tone }) {
-  const toneBg = 
+  const styles = 
     tone === 'green' 
-      ? 'bg-emerald-50/50 border-emerald-100 text-emerald-600 hover:border-emerald-200 shadow-sm' 
+      ? {
+          bg: 'bg-[#EEFAF4]',
+          border: 'border-[#CBEAD9]',
+          shadow: 'shadow-md shadow-emerald-500/5',
+          labelColor: 'text-[#1E6B4B]',
+          valueColor: 'text-[#0F3625]',
+          icon: (
+            <div className="p-3 rounded-xl bg-white/95 text-emerald-600 border border-[#CBEAD9]/50 shadow-sm shrink-0">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.5 4.5 9-9M22.5 6v6.75H15.75" />
+              </svg>
+            </div>
+          )
+        }
       : tone === 'red' 
-        ? 'bg-rose-50/50 border-rose-100 text-rose-600 hover:border-rose-200 shadow-sm' 
-        : 'bg-white border-pink-100 text-slate-800 hover:border-pink-200 shadow-sm'
+        ? {
+            bg: 'bg-[#FFE4E8]',
+            border: 'border-[#F7C0C7]',
+            shadow: 'shadow-md shadow-rose-500/5',
+            labelColor: 'text-[#9C273B]',
+            valueColor: 'text-[#52101B]',
+            icon: (
+              <div className="p-3 rounded-xl bg-white/95 text-rose-600 border border-[#F7C0C7]/50 shadow-sm shrink-0">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6L9 12.75l4.5-4.5 9 9M22.5 18v-6.75H15.75" />
+                </svg>
+              </div>
+            )
+          }
+        : {
+            bg: 'bg-[#FFF9E6]',
+            border: 'border-[#F2E3C2]',
+            shadow: 'shadow-md shadow-amber-500/5',
+            labelColor: 'text-[#8C6D1F]',
+            valueColor: 'text-[#4D3B0E]',
+            icon: (
+              <div className="p-3 rounded-xl bg-white/95 text-amber-600 border border-[#F2E3C2]/50 shadow-sm shrink-0">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 12V8H4v8h16v-4m0 0H12m8 0a2 2 0 100-4h-8" />
+                </svg>
+              </div>
+            )
+          }
 
   return (
-    <article className={`rounded-2xl border p-6 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:shadow-md ${toneBg}`}>
-      <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{label}</p>
-      <strong className="mt-3 block text-3xl font-extrabold tracking-tight font-sans text-slate-800">{currency.format(value)}</strong>
+    <article className={`rounded-2xl p-6 border flex items-center justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${styles.bg} ${styles.border} ${styles.shadow}`}>
+      <div className="grid gap-1">
+        <p className={`text-xs font-extrabold uppercase tracking-wider ${styles.labelColor}`}>{label}</p>
+        <strong className={`block text-3xl font-extrabold tracking-tight font-sans ${styles.valueColor}`}>{currency.format(value)}</strong>
+      </div>
+      {styles.icon}
     </article>
   )
 }
@@ -354,12 +396,12 @@ export default function Dashboard() {
         </article>
       </section>
 
-      <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
         <article className="card p-6">
           <h2 className="text-2xl font-bold text-slate-800">Minhas Contas</h2>
-          <p className="text-xs text-slate-400 mt-1 mb-6">Saldos atuais em suas carteiras e contas</p>
+          <p className="text-sm text-slate-500 mt-1 mb-6">Saldos atuais em suas carteiras e contas</p>
           
-          <div className="grid gap-4">
+          <div className="grid gap-6">
             {accounts.length === 0 ? (
               <div className="flex h-48 flex-col items-center justify-center gap-2 text-slate-400">
                 <svg className="w-8 h-8 text-pink-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -371,26 +413,26 @@ export default function Dashboard() {
               accounts.map((acc) => {
                 const val = Number(acc.balance)
                 return (
-                  <div key={acc.id} className="flex items-center justify-between border-b border-pink-50 pb-3 last:border-0 last:pb-0">
-                    <div className="flex items-center gap-2.5">
-                      <span className="h-3 w-3 rounded-full" style={{ backgroundColor: acc.color }} />
-                      <div className="grid gap-0.5">
-                        <span className="font-bold text-sm text-slate-700 line-clamp-1">{acc.name}</span>
-                        <span className="text-[10px] font-bold text-slate-400">{accountTypeLabels[acc.type]}</span>
+                  <div key={acc.id} className="flex items-center justify-between border-b border-pink-50/70 pb-5 last:border-0 last:pb-0">
+                    <div className="flex items-center gap-3.5">
+                      <span className="h-5 w-5 rounded-full shadow-sm shrink-0" style={{ backgroundColor: acc.color }} />
+                      <div className="grid gap-1">
+                        <span className="font-extrabold text-xl text-slate-800 line-clamp-1">{acc.name}</span>
+                        <span className="text-sm font-bold text-slate-500">{accountTypeLabels[acc.type]}</span>
                       </div>
                     </div>
-                    <span className="font-sans text-right text-xs">
+                    <span className="font-sans text-right text-sm">
                       {acc.type === 'CREDIT_CARD' ? (
                         <div className="grid gap-0.5 text-right">
-                          <span className="text-rose-500 font-bold">
+                          <span className="text-rose-500 font-black text-xl">
                             {currency.format(Math.abs(val))}
                           </span>
-                          <span className="text-[9px] font-bold text-slate-400">
+                          <span className="text-sm font-bold text-slate-400">
                             de {currency.format(Number(acc.creditLimit))}
                           </span>
                         </div>
                       ) : (
-                        <span className={`text-sm font-bold ${val >= 0 ? 'text-emerald-600' : 'text-rose-500'}`}>
+                        <span className={`text-xl font-black ${val >= 0 ? 'text-emerald-600' : 'text-rose-500'}`}>
                           {currency.format(val)}
                         </span>
                       )}
@@ -404,9 +446,9 @@ export default function Dashboard() {
 
         <article className="card p-6">
           <h2 className="text-2xl font-bold text-slate-800">Orçamentos do Mês</h2>
-          <p className="text-xs text-slate-400 mt-1 mb-6">Limite de gastos por categoria</p>
+          <p className="text-sm text-slate-500 mt-1 mb-6">Limite de gastos por categoria</p>
           
-          <div className="grid gap-5">
+          <div className="grid gap-6">
             {budgetProgress.length === 0 ? (
               <div className="flex h-48 flex-col items-center justify-center gap-2 text-slate-400">
                 <svg className="w-8 h-8 text-pink-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -435,19 +477,19 @@ export default function Dashboard() {
                         : 'text-emerald-600'
 
                 return (
-                  <div key={budget.id} className="grid gap-1">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="flex items-center gap-2 font-bold text-slate-700">
-                        <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: budget.color }} />
+                  <div key={budget.id} className="grid gap-3">
+                    <div className="flex items-center justify-between text-base">
+                      <span className="flex items-center gap-3.5 font-extrabold text-slate-800 text-xl">
+                        <span className="h-4.5 w-4.5 rounded-full shadow-sm shrink-0" style={{ backgroundColor: budget.color }} />
                         {budget.name}
                       </span>
-                      <span className="text-[10px] text-slate-400 font-semibold font-sans">
-                        <span className={`font-bold ${textColor}`}>{currency.format(budget.spent)}</span>
+                      <span className="text-base text-slate-500 font-bold font-sans">
+                        <span className={`font-extrabold ${textColor}`}>{currency.format(budget.spent)}</span>
                         {' / '}
-                        {currency.format(budget.limit)}
+                        <span className="text-slate-450 font-bold">{currency.format(budget.limit)}</span>
                       </span>
                     </div>
-                    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden border border-pink-100/50 p-0.5">
+                    <div className="h-4.5 w-full bg-slate-100 rounded-full overflow-hidden border border-pink-100/30 p-0.5">
                       <div 
                         className={`h-full rounded-full transition-all duration-500 ${barColor}`} 
                         style={{ width: `${budget.percent}%` }}
@@ -464,13 +506,13 @@ export default function Dashboard() {
           <div>
             <div className="flex items-center justify-between mb-1">
               <h2 className="text-2xl font-bold text-slate-800">Metas</h2>
-              <Link to="/goals" className="text-xs text-pink-600 font-bold hover:text-pink-500 transition-colors">
+              <Link to="/goals" className="text-sm text-pink-600 font-bold hover:text-pink-500 transition-colors">
                 Ver todos &rarr;
               </Link>
             </div>
-            <p className="text-xs text-slate-400 mb-6">Objetivos mais próximos do prazo</p>
+            <p className="text-sm text-slate-500 mt-1 mb-6">Objetivos mais próximos do prazo</p>
             
-            <div className="grid gap-5">
+            <div className="grid gap-6">
               {closestGoals.length === 0 ? (
                 <div className="flex h-48 flex-col items-center justify-center gap-2 text-slate-400">
                   <svg className="w-8 h-8 text-pink-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -492,26 +534,30 @@ export default function Dashboard() {
                         : 'bg-gradient-to-r from-amber-400 to-orange-400'
                   
                   return (
-                    <div key={goal.id} className="grid gap-1">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="font-bold text-slate-700 line-clamp-1" title={goal.name}>
+                    <div key={goal.id} className="grid gap-3">
+                      <div className="flex items-center justify-between text-base">
+                        <span className="font-extrabold text-xl text-slate-800 line-clamp-1" title={goal.name}>
                           {goal.name}
                         </span>
-                        <span className="text-[9px] font-bold font-sans">
-                          <span className={goal.daysLeft > 0 ? 'text-pink-500' : goal.daysLeft === 0 ? 'text-amber-500' : 'text-rose-500'}>
-                            {formatRemainingTimeShort(goal.daysLeft)}
-                          </span>
+                        <span className={`text-xs font-black px-3 py-1 rounded-full border ${
+                          goal.daysLeft > 0 
+                            ? 'bg-pink-50 text-pink-600 border-pink-100' 
+                            : goal.daysLeft === 0 
+                              ? 'bg-amber-50 text-amber-600 border-amber-100' 
+                              : 'bg-rose-50 text-rose-600 border-rose-100'
+                        }`}>
+                          {formatRemainingTimeShort(goal.daysLeft)}
                         </span>
                       </div>
-                      <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden border border-pink-100/50 p-0.5">
+                      <div className="h-4.5 w-full bg-slate-100 rounded-full overflow-hidden border border-pink-100/30 p-0.5">
                         <div 
                           className={`h-full rounded-full transition-all duration-500 ${barColor}`} 
                           style={{ width: `${percent}%` }}
                         />
                       </div>
-                      <div className="flex items-center justify-between text-[9px] text-slate-400 font-bold font-sans">
-                        <span>{currency.format(current)}</span>
-                        <span>{percent.toFixed(0)}%</span>
+                      <div className="flex items-center justify-between text-sm font-bold font-sans">
+                        <span className="text-slate-500">{currency.format(current)}</span>
+                        <span className="text-slate-800 font-extrabold text-base">{percent.toFixed(0)}%</span>
                       </div>
                     </div>
                   )
@@ -520,9 +566,9 @@ export default function Dashboard() {
             </div>
           </div>
           {closestGoals.length > 0 && (
-            <div className="mt-5 pt-3 border-t border-pink-50 text-center">
+            <div className="mt-6 pt-4 border-t border-pink-50 text-center">
               <Link to="/goals">
-                <Button variant="secondary" className="w-full text-xs h-9">
+                <Button variant="secondary" className="w-full text-sm h-11">
                   Ir para Objetivos
                 </Button>
               </Link>
@@ -532,9 +578,9 @@ export default function Dashboard() {
 
         <article className="card p-6">
           <h2 className="text-2xl font-bold text-slate-800">Últimos Lançamentos</h2>
-          <p className="text-xs text-slate-400 mt-1 mb-6">Atividades financeiras recentes</p>
+          <p className="text-sm text-slate-500 mt-1 mb-6">Atividades financeiras recentes</p>
           
-          <div className="grid gap-4">
+          <div className="grid gap-6">
             {transactions.length === 0 ? (
               <div className="flex h-48 flex-col items-center justify-center gap-2 text-slate-400">
                 <svg className="w-8 h-8 text-pink-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -554,19 +600,19 @@ export default function Dashboard() {
                 const valuePrefix = isIncome ? '+' : isTransfer ? '' : '-'
 
                 return (
-                  <div key={tx.id} className="flex items-center justify-between border-b border-pink-50 pb-3 last:border-0 last:pb-0">
-                    <div className="grid gap-0.5 col-span-2">
-                      <span className="font-bold text-sm text-slate-700 line-clamp-1">{tx.description}</span>
-                      <div className="flex items-center gap-2 text-[10px] text-slate-400 font-bold">
+                  <div key={tx.id} className="flex items-center justify-between border-b border-pink-50 pb-4 last:border-0 last:pb-0">
+                    <div className="grid gap-1.5 col-span-2">
+                      <span className="font-extrabold text-xl text-slate-800 line-clamp-1">{tx.description}</span>
+                      <div className="flex items-center gap-2.5 text-base text-slate-500 font-semibold">
                         <span>{formatDateShort(tx.date)}</span>
-                        <span>•</span>
-                        <span className="flex items-center gap-1">
-                          <span className="h-2 w-2 rounded-full" style={{ backgroundColor: tx.category?.color ?? '#cbd5e1' }} />
-                          {tx.category?.name ?? 'Sem categoria'}
+                        <span className="text-slate-300">•</span>
+                        <span className="flex items-center gap-2">
+                          <span className="h-4 w-4 rounded-full shadow-sm shrink-0" style={{ backgroundColor: tx.category?.color ?? '#cbd5e1' }} />
+                          <span className="text-slate-600 font-bold">{tx.category?.name ?? 'Sem categoria'}</span>
                         </span>
                       </div>
                     </div>
-                    <span className={`font-sans text-xs font-bold text-right ${valueColor}`}>
+                    <span className={`font-sans text-xl font-black text-right ${valueColor}`}>
                       {valuePrefix} {currency.format(Number(tx.amount))}
                     </span>
                   </div>
