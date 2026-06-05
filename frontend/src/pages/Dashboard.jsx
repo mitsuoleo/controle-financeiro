@@ -6,6 +6,7 @@ import { Button } from '../components/ui/Button'
 import { api } from '../services/api'
 import { formatRemainingTimeShort, formatDateShort } from '../utils/labels'
 import { useQuickAddStore } from '../store/quickAddStore'
+import { CategoryIcon } from '../components/CategoryIcon'
 
 const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
 
@@ -24,9 +25,10 @@ function StatCard({ label, value, tone }) {
           labelColor: 'text-[#1E6B4B]',
           valueColor: 'text-[#0F3625]',
           icon: (
-            <div className="p-3 rounded-xl bg-white/95 text-emerald-600 border border-[#CBEAD9]/50 shadow-sm shrink-0">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.5 4.5 9-9M22.5 6v6.75H15.75" />
+            <div className="p-3 rounded-xl bg-white/95 text-emerald-600 border border-[#CBEAD9]/50 shadow-sm shrink-0 flex items-center justify-center">
+              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="7" y1="17" x2="17" y2="7" />
+                <polyline points="7 7 17 7 17 17" />
               </svg>
             </div>
           )
@@ -39,9 +41,10 @@ function StatCard({ label, value, tone }) {
             labelColor: 'text-[#9C273B]',
             valueColor: 'text-[#52101B]',
             icon: (
-              <div className="p-3 rounded-xl bg-white/95 text-rose-600 border border-[#F7C0C7]/50 shadow-sm shrink-0">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6L9 12.75l4.5-4.5 9 9M22.5 18v-6.75H15.75" />
+              <div className="p-3 rounded-xl bg-white/95 text-rose-600 border border-[#F7C0C7]/50 shadow-sm shrink-0 flex items-center justify-center">
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="7" y1="7" x2="17" y2="17" />
+                  <polyline points="17 7 17 17 7 17" />
                 </svg>
               </div>
             )
@@ -53,9 +56,11 @@ function StatCard({ label, value, tone }) {
             labelColor: 'text-[#8C6D1F]',
             valueColor: 'text-[#4D3B0E]',
             icon: (
-              <div className="p-3 rounded-xl bg-white/95 text-amber-600 border border-[#F2E3C2]/50 shadow-sm shrink-0">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 12V8H4v8h16v-4m0 0H12m8 0a2 2 0 100-4h-8" />
+              <div className="p-3 rounded-xl bg-white/95 text-amber-600 border border-[#F2E3C2]/50 shadow-sm shrink-0 flex items-center justify-center">
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="8" width="14" height="10" rx="2" />
+                  <path d="M21 12V8H4v8h16v-4" />
+                  <path d="M16 12h5v4h-5z" />
                 </svg>
               </div>
             )
@@ -480,7 +485,9 @@ export default function Dashboard() {
                   <div key={budget.id} className="grid gap-3">
                     <div className="flex items-center justify-between text-base">
                       <span className="flex items-center gap-3.5 font-extrabold text-slate-800 text-xl">
-                        <span className="h-4.5 w-4.5 rounded-full shadow-sm shrink-0" style={{ backgroundColor: budget.color }} />
+                        <div className="w-8.5 h-8.5 rounded-xl flex items-center justify-center shadow-sm shrink-0 border" style={{ backgroundColor: `${budget.color}20`, borderColor: `${budget.color}45` }}>
+                          <CategoryIcon icon={budget.icon} color={budget.color} className="w-5 h-5" />
+                        </div>
                         {budget.name}
                       </span>
                       <span className="text-base text-slate-500 font-bold font-sans">
@@ -607,7 +614,9 @@ export default function Dashboard() {
                         <span>{formatDateShort(tx.date)}</span>
                         <span className="text-slate-300">•</span>
                         <span className="flex items-center gap-2">
-                          <span className="h-4 w-4 rounded-full shadow-sm shrink-0" style={{ backgroundColor: tx.category?.color ?? '#cbd5e1' }} />
+                          <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-sm shrink-0 border" style={{ backgroundColor: `${tx.category?.color ?? '#cbd5e1'}20`, borderColor: `${tx.category?.color ?? '#cbd5e1'}45` }}>
+                            <CategoryIcon icon={tx.category?.icon ?? 'tag'} color={tx.category?.color ?? '#cbd5e1'} className="w-4.5 h-4.5" />
+                          </div>
                           <span className="text-slate-600 font-bold">{tx.category?.name ?? 'Sem categoria'}</span>
                         </span>
                       </div>

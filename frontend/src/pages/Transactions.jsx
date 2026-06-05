@@ -5,6 +5,7 @@ import { Input } from '../components/ui/Input'
 import { api, getApiError } from '../services/api'
 import { formatCurrency, transactionTypeLabels, formatCurrencyValue, formatDate } from '../utils/labels'
 import { useQuickAddStore } from '../store/quickAddStore'
+import { CategoryIcon } from '../components/CategoryIcon'
 
 const initialForm = {
   type: 'EXPENSE',
@@ -706,7 +707,7 @@ export default function Transactions() {
                 <label className="flex-1 min-w-[160px] grid gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
                   Tipo
                   <select
-                    className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15 cursor-pointer"
+                    className="w-full h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15 cursor-pointer"
                     value={filters.type}
                     onChange={(event) => updateFilter('type', event.target.value)}
                   >
@@ -719,7 +720,7 @@ export default function Transactions() {
                 <label className="flex-1 min-w-[160px] grid gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
                   Conta
                   <select
-                    className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15 cursor-pointer"
+                    className="w-full h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15 cursor-pointer"
                     value={filters.accountId}
                     onChange={(event) => updateFilter('accountId', event.target.value)}
                   >
@@ -734,7 +735,7 @@ export default function Transactions() {
                 <label className="flex-1 min-w-[160px] grid gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
                   Categoria
                   <select
-                    className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15 cursor-pointer"
+                    className="w-full h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15 cursor-pointer"
                     value={filters.categoryId}
                     onChange={(event) => updateFilter('categoryId', event.target.value)}
                   >
@@ -746,7 +747,7 @@ export default function Transactions() {
                     ))}
                   </select>
                 </label>
-                <div className="flex-1 min-w-[140px]">
+                <div className="flex-1 min-w-[160px]">
                   <Input
                     label="Início"
                     type="date"
@@ -754,7 +755,7 @@ export default function Transactions() {
                     onChange={(event) => updateFilter('startDate', event.target.value)}
                   />
                 </div>
-                <div className="flex-1 min-w-[140px]">
+                <div className="flex-1 min-w-[160px]">
                   <Input
                     label="Fim"
                     type="date"
@@ -762,18 +763,18 @@ export default function Transactions() {
                     onChange={(event) => updateFilter('endDate', event.target.value)}
                   />
                 </div>
-                <div className="flex-1 min-w-[140px]">
-                  <Button variant="secondary" className="w-full h-10 cursor-pointer" onClick={() => setFilters(initialFilters)}>
+                <div className="flex-1 min-w-[160px]">
+                  <Button variant="secondary" className="w-full h-11 cursor-pointer" onClick={() => setFilters(initialFilters)}>
                     Limpar Filtros
                   </Button>
                 </div>
-                <div className="flex-1 min-w-[140px]">
-                  <Button variant="secondary" className="w-full h-10 cursor-pointer" onClick={exportToCSV}>
+                <div className="flex-1 min-w-[160px]">
+                  <Button variant="secondary" className="w-full h-11 cursor-pointer" onClick={exportToCSV}>
                     Exportar CSV
                   </Button>
                 </div>
-                <div className="flex-1 min-w-[140px]">
-                  <Button variant="secondary" className="w-full h-10 cursor-pointer" onClick={exportToPDF}>
+                <div className="flex-1 min-w-[160px]">
+                  <Button variant="secondary" className="w-full h-11 cursor-pointer" onClick={exportToPDF}>
                     Exportar PDF
                   </Button>
                 </div>
@@ -843,13 +844,14 @@ export default function Transactions() {
                                 <div className="flex flex-col gap-1 items-start">
                                   {transaction.category ? (
                                     <span
-                                      className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border"
+                                      className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold border"
                                       style={{
                                         backgroundColor: `${transaction.category.color}15`,
                                         borderColor: `${transaction.category.color}40`,
                                         color: transaction.category.color,
                                       }}
                                     >
+                                      <CategoryIcon icon={transaction.category.icon} color={transaction.category.color} className="w-3.5 h-3.5" />
                                       {transaction.category.name}
                                     </span>
                                   ) : (
@@ -989,13 +991,14 @@ export default function Transactions() {
                               )
                             ) : rule.category ? (
                               <span
-                                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border"
+                                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold border"
                                 style={{
                                   backgroundColor: `${rule.category.color}15`,
                                   borderColor: `${rule.category.color}40`,
                                   color: rule.category.color,
                                 }}
                               >
+                                <CategoryIcon icon={rule.category.icon} color={rule.category.color} className="w-3.5 h-3.5" />
                                 {rule.category.name}
                               </span>
                             ) : (

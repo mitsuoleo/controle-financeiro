@@ -3,6 +3,7 @@ import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { api, getApiError } from '../services/api'
 import { categoryTypeLabels, formatCurrencyValue } from '../utils/labels'
+import { CategoryIcon, iconOptions } from '../components/CategoryIcon'
 
 const initialForm = {
   name: '',
@@ -137,7 +138,21 @@ export default function Categories() {
             />
           )}
 
-          <Input label="Ícone" name="icon" value={form.icon} onChange={updateForm} required />
+          <label className="grid gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
+            Ícone
+            <select
+              name="icon"
+              className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/15 cursor-pointer"
+              value={form.icon}
+              onChange={updateForm}
+            >
+              {iconOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </label>
 
           <label className="grid gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
             Cor
@@ -228,9 +243,12 @@ export default function Categories() {
                         )}
                       </td>
                       <td className="px-5 py-4 text-slate-500">
-                        <span className="font-mono bg-slate-50 px-2 py-1 rounded text-xs text-slate-600 border border-slate-200">
-                          {category.icon}
-                        </span>
+                        <div className="flex items-center gap-2.5">
+                          <div className="p-2 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center shadow-sm">
+                            <CategoryIcon icon={category.icon} color={category.color} className="w-5 h-5" />
+                          </div>
+                          <span className="text-xs font-extrabold text-slate-500 font-mono capitalize">{category.icon}</span>
+                        </div>
                       </td>
                       <td className="px-5 py-4">
                         <span className="inline-flex items-center gap-2 text-slate-600">
